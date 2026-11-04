@@ -1,0 +1,23 @@
+.DS_Store
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.build/
+*.xcarchive
+*.ipa
+
+# Geheimnisse und Schlüssel
+GoogleService-Info.plist
+Config/*.xcconfig
+!Config/*.example.xcconfig
+*.p8
+*.p12
+*.mobileprovision
+*.provisionprofile
+.env
+
+# Lokal, nicht im Repo
+.idea/
+AGENTS.md
+CLAUDE.md
