@@ -1,0 +1,117 @@
+{
+  "sourceLanguage": "de",
+  "strings": {
+    "Aktualisieren": {
+      "extractionState": "manual"
+    },
+    "Anmelden": {
+      "extractionState": "manual"
+    },
+    "Bitte melde dich neu an": {
+      "extractionState": "manual"
+    },
+    "Das liegt nicht an dir. Versuche es in ein paar Minuten nochmals.": {
+      "extractionState": "manual"
+    },
+    "Dein Konto ist noch keiner Einheit zugewiesen. Das erledigt deine Jugendleitung. Frag dort nach.": {
+      "extractionState": "manual"
+    },
+    "Diese Seite ist nur für die Leitung deiner Einheit. Wenn du denkst, das ist ein Fehler, frag deine Leitung.": {
+      "extractionState": "manual"
+    },
+    "Diese Übung gibt es nicht mehr. Vielleicht wurde sie verschoben oder abgesagt.": {
+      "extractionState": "manual"
+    },
+    "Du warst länger nicht aktiv. Zu deiner Sicherheit haben wir dich abgemeldet.": {
+      "extractionState": "manual"
+    },
+    "Etwas ist schiefgelaufen": {
+      "extractionState": "manual"
+    },
+    "FEUERWEHR": {
+      "extractionState": "manual"
+    },
+    "FireResponse": {
+      "extractionState": "manual"
+    },
+    "JUGEND": {
+      "extractionState": "manual"
+    },
+    "Ja": {
+      "extractionState": "manual"
+    },
+    "Ja für %@": {
+      "extractionState": "manual"
+    },
+    "Kein Zugriff": {
+      "extractionState": "manual"
+    },
+    "Keine Einheit": {
+      "extractionState": "manual"
+    },
+    "Keine Verbindung": {
+      "extractionState": "manual"
+    },
+    "Nein": {
+      "extractionState": "manual"
+    },
+    "Nein für %@": {
+      "extractionState": "manual"
+    },
+    "Nicht gefunden": {
+      "extractionState": "manual"
+    },
+    "Nicht zugeordnet": {
+      "extractionState": "manual"
+    },
+    "Noch keine Übungen": {
+      "extractionState": "manual"
+    },
+    "Noch offen": {
+      "extractionState": "manual"
+    },
+    "Nochmals versuchen": {
+      "extractionState": "manual"
+    },
+    "Offen": {
+      "extractionState": "manual"
+    },
+    "Passwort": {
+      "extractionState": "manual"
+    },
+    "Passwort anzeigen": {
+      "extractionState": "manual"
+    },
+    "Passwort verbergen": {
+      "extractionState": "manual"
+    },
+    "Prüfe dein Internet und versuche es nochmals.": {
+      "extractionState": "manual"
+    },
+    "Prüfen": {
+      "extractionState": "manual"
+    },
+    "Rangabzeichen": {
+      "extractionState": "manual"
+    },
+    "Rangabzeichen, ein Stern": {
+      "extractionState": "manual"
+    },
+    "Rangabzeichen, zwei Sterne": {
+      "extractionState": "manual"
+    },
+    "Sobald die Leitung neue Übungen einträgt, siehst du sie hier.": {
+      "extractionState": "manual"
+    },
+    "Zu den Übungen": {
+      "extractionState": "manual"
+    },
+    "Zurück zum Login": {
+      "extractionState": "manual"
+    },
+    "Übungen werden geladen": {
+      "extractionState": "manual"
+    }
+  },
+  "version": "1.0"
+}
