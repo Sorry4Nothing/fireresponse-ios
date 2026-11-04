@@ -1,0 +1,14 @@
+included:
+  - FireResponse
+  - FireResponseTests
+excluded:
+  - FireResponse/Resources
+disabled_rules:
+  - identifier_name
+  - type_body_length
+opt_in_rules:
+  - empty_count
+  - force_unwrapping
+line_length:
+  warning: 140
+  error: 200

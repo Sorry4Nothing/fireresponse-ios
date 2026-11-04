@@ -9,8 +9,7 @@ build/
 
 # Geheimnisse und Schlüssel
 GoogleService-Info.plist
-Config/*.xcconfig
-!Config/*.example.xcconfig
+Config/Local.xcconfig
 *.p8
 *.p12
 *.mobileprovision
