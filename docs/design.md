@@ -45,6 +45,7 @@ Noch nicht als Baustein umgesetzt: Alert, Sheet, Umschalter, TabBar und Navigati
 
 - Die Einstellungsseite «Benachrichtigungen» ist im Design nicht gezeichnet. Sie ist aus `ListRow` mit `Toggle` (Tint `switch-on`), `Notice` und `FRButton` gebaut: Schalter «Neue Übungen» und, nur für Personen mit Rolle in einer Einheit, «Neue Anmeldungen». Ein Schalter springt bei einem Fehler zurück und zeigt eine Meldung. Ist das System-Recht aus, steht oben ein Hinweis mit Weg in die Einstellungen; ist noch nie gefragt worden, ein Knopf «Mitteilungen erlauben».
 - Das Recht fragt die App nicht beim Start, sondern über `PushCenter.requestAuthorization()` (Einstellungen; der Integrationsschritt ruft es nach dem Willkommen).
+
 ## Übungen (Issue #4)
 
 Ordner `FireResponse/Features/Exercises/`: `ExerciseLogic` (Regeln und Formate, rein), `ExerciseModels` (Laden, Antworten, Polling), Ansichten für Liste, Detail und Anmeldungen.
@@ -63,6 +64,7 @@ Abweichungen und Lücken:
 - Rollennamen der Kontaktperson (Hauptleitung, stellvertretende Leitung) sind eine Annahme nach dem Design-Beispiel.
 - In der Liste steht «Kinder» im Umschalter der Anmeldungen wie im Design, auch wenn Teilnehmende selbst antworten.
 - Die Debug-Vorschauen (`#if DEBUG`) laufen erst, wenn das Projekt `DEBUG` als Swift-Bedingung setzt (Konfiguration setzt nur `GCC_PREPROCESSOR_DEFINITIONS`).
+
 ## Profil und App-Sperre (Issue #5)
 
 Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageResizer`) und `Features/Lock/` (`AppLockController`, `BiometricAuthenticating`, `LockStore`, `appLock()`).
@@ -75,6 +77,9 @@ Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageRes
 - **Konto aufs Kind übertragen:** Zeile nur für Eltern (das Design kennt im Profil keine Hilfe).
 - **Gesperrt:** Zustand ohne Vorlage im Design; Aufbau wie `StateView` (Symbol, Titel, Satz, «Entsperren», Textknopf).
 - **Datenschutz:** «Stand» zeigt die Fassung (die API liefert kein Datum).
+
+
+
 ## Erster Start (Login, Passwort, Willkommen)
 
 Code in `FireResponse/Features/Onboarding/`, Ablauf in `App/AppModel.swift` (`phase`).
