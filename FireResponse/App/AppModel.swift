@@ -245,6 +245,7 @@ final class AppModel {
         passwordJustSaved = false
         failedSignIns = 0
         URLCache.shared.removeAllCachedResponses()
+        WidgetSync.clear()
         await api.client.forgetSession()
         phase = expired ? .sessionExpired : .signedOut
     }
