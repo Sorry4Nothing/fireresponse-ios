@@ -1,19 +1,49 @@
 {
   "sourceLanguage": "de",
   "strings": {
+    "%@ bis %@ Uhr": {
+      "extractionState": "manual"
+    },
+    "%@ bis %@, %@": {
+      "extractionState": "manual"
+    },
+    "%@ kommt": {
+      "extractionState": "manual"
+    },
+    "%@ kommt nicht": {
+      "extractionState": "manual"
+    },
+    "%lld Ja": {
+      "extractionState": "manual"
+    },
+    "%lld Ja, %lld Nein, %lld offen von %lld": {
+      "extractionState": "manual"
+    },
     "%lld Minuten": {
+      "extractionState": "manual"
+    },
+    "%lld Nein": {
       "extractionState": "manual"
     },
     "%lld Sekunden": {
       "extractionState": "manual"
     },
+    "%lld offen": {
+      "extractionState": "manual"
+    },
     "1 Sekunde": {
+      "extractionState": "manual"
+    },
+    "Abgesagt": {
       "extractionState": "manual"
     },
     "Admins melden sich im Admin-Bereich an. In der App geht das nicht.": {
       "extractionState": "manual"
     },
     "Aktualisieren": {
+      "extractionState": "manual"
+    },
+    "Aktualisieren hat nicht geklappt": {
       "extractionState": "manual"
     },
     "Alle Anlässe von %@ auf einen Blick.": {
@@ -26,6 +56,27 @@
       "extractionState": "manual"
     },
     "Anmelden hat nicht geklappt": {
+      "extractionState": "manual"
+    },
+    "Anmeldung ab %@": {
+      "extractionState": "manual"
+    },
+    "Anmeldung offen": {
+      "extractionState": "manual"
+    },
+    "Anmeldungen": {
+      "extractionState": "manual"
+    },
+    "Anmeldungen ansehen": {
+      "extractionState": "manual"
+    },
+    "Anrufen, %@": {
+      "extractionState": "manual"
+    },
+    "Antwort nicht gesendet": {
+      "extractionState": "manual"
+    },
+    "Aufgebot": {
       "extractionState": "manual"
     },
     "Ausgewählt": {
@@ -49,6 +100,9 @@
     "Bitte melde dich neu an": {
       "extractionState": "manual"
     },
+    "Bitte noch einen Moment warten.": {
+      "extractionState": "manual"
+    },
     "Bitte warte %@ und versuche es dann nochmals.": {
       "extractionState": "manual"
     },
@@ -65,6 +119,15 @@
       "extractionState": "manual"
     },
     "Das Startpasswort stimmt nicht. Gib es nochmals ein.": {
+      "extractionState": "manual"
+    },
+    "Das darfst du nicht.": {
+      "extractionState": "manual"
+    },
+    "Das dauert länger als sonst.": {
+      "extractionState": "manual"
+    },
+    "Das gibt es nicht mehr, oder du darfst es nicht sehen.": {
       "extractionState": "manual"
     },
     "Das liegt nicht an dir. Versuche es in ein paar Minuten nochmals.": {
@@ -85,16 +148,34 @@
     "Dein Konto ist noch keiner Einheit zugewiesen. Das erledigt deine Jugendleitung. Frag dort nach.": {
       "extractionState": "manual"
     },
+    "Deine Anmeldung": {
+      "extractionState": "manual"
+    },
     "Deine Kinder": {
       "extractionState": "manual"
     },
     "Deine Teilnehmenden": {
       "extractionState": "manual"
     },
+    "Die Anmeldung ist geschlossen.": {
+      "extractionState": "manual"
+    },
+    "Die Anmeldung ist geschlossen. Die Übung ist abgesagt oder hat schon begonnen.": {
+      "extractionState": "manual"
+    },
+    "Die Anmeldung ist noch nicht offen.": {
+      "extractionState": "manual"
+    },
     "Die beiden Passwörter sind nicht gleich.": {
       "extractionState": "manual"
     },
+    "Die Übung hat schon begonnen. Die Anmeldung lässt sich nicht mehr ändern.": {
+      "extractionState": "manual"
+    },
     "Diese App ist zu alt": {
+      "extractionState": "manual"
+    },
+    "Diese App ist zu alt. Bitte installiere die neue Version.": {
       "extractionState": "manual"
     },
     "Diese Seite ist nur für die Leitung deiner Einheit. Wenn du denkst, das ist ein Fehler, frag deine Leitung.": {
@@ -104,6 +185,18 @@
       "extractionState": "manual"
     },
     "Dieses Passwort ist aus einem Datenleck bekannt. Wähle ein anderes.": {
+      "extractionState": "manual"
+    },
+    "Du": {
+      "extractionState": "manual"
+    },
+    "Du bist dabei": {
+      "extractionState": "manual"
+    },
+    "Du bist nicht angemeldet. Bitte melde dich an.": {
+      "extractionState": "manual"
+    },
+    "Du bist nicht dabei": {
       "extractionState": "manual"
     },
     "Du hast ein Startpasswort von deiner Leitung bekommen. Wähle jetzt ein eigenes, das nur du kennst.": {
@@ -130,7 +223,16 @@
     "Erster Login": {
       "extractionState": "manual"
     },
+    "Es gibt keine Kinder in dieser Einheit.": {
+      "extractionState": "manual"
+    },
+    "Es gibt keine Leitenden in dieser Einheit.": {
+      "extractionState": "manual"
+    },
     "Etwas ist schiefgelaufen": {
+      "extractionState": "manual"
+    },
+    "Etwas ist schiefgelaufen. Bitte versuche es nochmals.": {
       "extractionState": "manual"
     },
     "FEUERWEHR": {
@@ -145,10 +247,31 @@
     "FireResponse": {
       "extractionState": "manual"
     },
+    "Für diese Übung gibt es keine Anmeldung.": {
+      "extractionState": "manual"
+    },
+    "Ganztägig": {
+      "extractionState": "manual"
+    },
+    "Ganztägig bis %@": {
+      "extractionState": "manual"
+    },
+    "Gesendet %@": {
+      "extractionState": "manual"
+    },
     "Gib dein Startpasswort ein.": {
       "extractionState": "manual"
     },
+    "Hauptleitung": {
+      "extractionState": "manual"
+    },
     "Ich habe die Datenschutzerklärung gelesen und bin einverstanden.": {
+      "extractionState": "manual"
+    },
+    "In Kalender übernehmen": {
+      "extractionState": "manual"
+    },
+    "Info": {
       "extractionState": "manual"
     },
     "JUGEND": {
@@ -173,6 +296,30 @@
       "extractionState": "manual"
     },
     "Keine Verbindung": {
+      "extractionState": "manual"
+    },
+    "Keine Verbindung. Prüfe dein Internet und versuche es nochmals.": {
+      "extractionState": "manual"
+    },
+    "Kommen deine Kinder?": {
+      "extractionState": "manual"
+    },
+    "Kommst du?": {
+      "extractionState": "manual"
+    },
+    "Kontaktperson": {
+      "extractionState": "manual"
+    },
+    "Kontaktperson, Hauptleitung": {
+      "extractionState": "manual"
+    },
+    "Kontaktperson, stellvertretende Leitung": {
+      "extractionState": "manual"
+    },
+    "Konto aufs Kind übertragen": {
+      "extractionState": "manual"
+    },
+    "Leitung": {
       "extractionState": "manual"
     },
     "Los geht’s": {
@@ -301,13 +448,22 @@
     "Sobald die Leitung neue Übungen einträgt, siehst du sie hier.": {
       "extractionState": "manual"
     },
+    "Sortiert: offen zuerst, dann Ja, dann Nein.": {
+      "extractionState": "manual"
+    },
     "Speichern hat nicht geklappt": {
       "extractionState": "manual"
     },
     "Startpasswort": {
       "extractionState": "manual"
     },
+    "Stellvertretende Leitung": {
+      "extractionState": "manual"
+    },
     "Stimmt überein": {
+      "extractionState": "manual"
+    },
+    "Thema": {
       "extractionState": "manual"
     },
     "Wappen Kanton Zürich": {
@@ -325,13 +481,31 @@
     "Wird geladen …": {
       "extractionState": "manual"
     },
+    "Wird gespeichert …": {
+      "extractionState": "manual"
+    },
+    "Wird noch geprüft": {
+      "extractionState": "manual"
+    },
+    "Zeit": {
+      "extractionState": "manual"
+    },
+    "Zeit noch offen": {
+      "extractionState": "manual"
+    },
     "Zu den Übungen": {
+      "extractionState": "manual"
+    },
+    "Zu viele Anfragen. Bitte warte einen Moment und versuche es dann nochmals.": {
       "extractionState": "manual"
     },
     "Zu viele Versuche": {
       "extractionState": "manual"
     },
     "Zurück zum Login": {
+      "extractionState": "manual"
+    },
+    "Zusage für %@ offen": {
       "extractionState": "manual"
     },
     "Zusagen": {
