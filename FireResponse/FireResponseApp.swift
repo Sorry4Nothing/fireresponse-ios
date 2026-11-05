@@ -10,6 +10,11 @@ struct FireResponseApp: App {
             RootView()
                 .environment(model)
                 .task { await model.run() }
+                .onOpenURL { url in
+                    if let target = PushTarget.from(type: "programm", id: WidgetLink.programId(from: url)) {
+                        PushCenter.shared.router.open(target)
+                    }
+                }
         }
     }
 

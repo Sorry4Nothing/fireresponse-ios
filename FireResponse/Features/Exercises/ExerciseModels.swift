@@ -38,10 +38,13 @@ final class ExerciseListModel {
     private(set) var refreshError: ApiError?
     private let service: any ExercisesService
     private let now: @Sendable () -> Date
+    private let onLoaded: @MainActor ([Program]) -> Void
 
-    init(service: any ExercisesService, now: @escaping @Sendable () -> Date = { .now }) {
+    /// `onLoaded` bekommt jede frisch geladene Liste (die App füttert damit das Widget).
+    init(service: any ExercisesService, now: @escaping @Sendable () -> Date = { .now }, onLoaded: @escaping @MainActor ([Program]) -> Void = { _ in }) {
         self.service = service
         self.now = now
+        self.onLoaded = onLoaded
     }
 
     var today: SwissDay { SwissDay(date: now()) }
@@ -55,6 +58,7 @@ final class ExerciseListModel {
         case .ok(let list):
             refreshError = nil
             phase = .loaded(ExerciseRules.groupByDay(list.programs))
+            onLoaded(list.programs)
         case .failure(let error, _, _):
             if case .loaded = phase { refreshError = error } else { phase = .failed(error) }
         }

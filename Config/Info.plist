@@ -8,6 +8,17 @@
 	<string>de-CH</string>
 	<key>FirebaseMessagingAutoInitEnabled</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>ch.fireresponse.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fireresponse</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

@@ -28,7 +28,7 @@ struct ExercisesStack: View {
         self.router = router
         self.service = service
         self.profile = profile
-        _list = State(initialValue: ExerciseListModel(service: service))
+        _list = State(initialValue: ExerciseListModel(service: service, onLoaded: { WidgetSync.update(programs: $0) }))
         _images = State(initialValue: RemoteImages(service: service))
     }
 
