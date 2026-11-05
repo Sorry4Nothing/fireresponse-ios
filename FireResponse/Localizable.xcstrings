@@ -34,7 +34,13 @@
     "1 Sekunde": {
       "extractionState": "manual"
     },
+    "Abbrechen": {
+      "extractionState": "manual"
+    },
     "Abgesagt": {
+      "extractionState": "manual"
+    },
+    "Abmelden": {
       "extractionState": "manual"
     },
     "Admins melden sich im Admin-Bereich an. In der App geht das nicht.": {
@@ -76,13 +82,31 @@
     "Antwort nicht gesendet": {
       "extractionState": "manual"
     },
+    "App": {
+      "extractionState": "manual"
+    },
     "Aufgebot": {
       "extractionState": "manual"
     },
     "Ausgewählt": {
       "extractionState": "manual"
     },
+    "Beim Start und nach 30 Sekunden im Hintergrund fragt die App nach Face ID. Ändert sich Face ID auf dem Gerät, meldest du dich neu an.": {
+      "extractionState": "manual"
+    },
+    "Beim Start und nach 30 Sekunden im Hintergrund fragt die App nach Touch ID. Ändert sich Touch ID auf dem Gerät, meldest du dich neu an.": {
+      "extractionState": "manual"
+    },
+    "Benachrichtigungen": {
+      "extractionState": "manual"
+    },
     "Benutzername": {
+      "extractionState": "manual"
+    },
+    "Bestätige, dass du FireResponse so entsperren willst.": {
+      "extractionState": "manual"
+    },
+    "Bild entfernen": {
       "extractionState": "manual"
     },
     "Bitte bestätige zuerst den Datenschutz.": {
@@ -106,13 +130,22 @@
     "Bitte warte einen Moment und versuche es dann nochmals.": {
       "extractionState": "manual"
     },
+    "Danach brauchst du wieder Benutzername und Passwort.": {
+      "extractionState": "manual"
+    },
     "Dann hilft dir die Leitung deiner Einheit weiter.": {
+      "extractionState": "manual"
+    },
+    "Das Entsperren hat nicht geklappt.": {
       "extractionState": "manual"
     },
     "Das Passwort braucht mindestens 12 Zeichen.": {
       "extractionState": "manual"
     },
     "Das Passwort darf höchstens 128 Zeichen lang sein.": {
+      "extractionState": "manual"
+    },
+    "Das Profilbild konnte nicht gespeichert werden.": {
       "extractionState": "manual"
     },
     "Das Startpasswort stimmt nicht. Gib es nochmals ein.": {
@@ -208,7 +241,25 @@
     "Einen Moment …": {
       "extractionState": "manual"
     },
+    "Einheit · Bezirk %@": {
+      "extractionState": "manual"
+    },
     "Einwilligung": {
+      "extractionState": "manual"
+    },
+    "Elternteil": {
+      "extractionState": "manual"
+    },
+    "Entsperre FireResponse mit Face ID.": {
+      "extractionState": "manual"
+    },
+    "Entsperre FireResponse mit Touch ID.": {
+      "extractionState": "manual"
+    },
+    "Entsperre FireResponse.": {
+      "extractionState": "manual"
+    },
+    "Entsperren": {
       "extractionState": "manual"
     },
     "Erster Login": {
@@ -229,6 +280,9 @@
     "FEUERWEHR": {
       "extractionState": "manual"
     },
+    "Face ID auf diesem Gerät hat sich geändert. Melde dich zur Sicherheit neu an.": {
+      "extractionState": "manual"
+    },
     "Fassung %lld": {
       "extractionState": "manual"
     },
@@ -236,6 +290,9 @@
       "extractionState": "manual"
     },
     "FireResponse": {
+      "extractionState": "manual"
+    },
+    "Foto auswählen": {
       "extractionState": "manual"
     },
     "Für diese Übung gibt es keine Anmeldung.": {
@@ -248,6 +305,9 @@
       "extractionState": "manual"
     },
     "Gesendet %@": {
+      "extractionState": "manual"
+    },
+    "Gesperrt": {
       "extractionState": "manual"
     },
     "Gib dein Startpasswort ein.": {
@@ -292,6 +352,12 @@
     "Keine Verbindung. Prüfe dein Internet und versuche es nochmals.": {
       "extractionState": "manual"
     },
+    "Kinder": {
+      "extractionState": "manual"
+    },
+    "Kommandant": {
+      "extractionState": "manual"
+    },
     "Kommen deine Kinder?": {
       "extractionState": "manual"
     },
@@ -307,6 +373,9 @@
     "Kontaktperson, stellvertretende Leitung": {
       "extractionState": "manual"
     },
+    "Konto": {
+      "extractionState": "manual"
+    },
     "Konto aufs Kind übertragen": {
       "extractionState": "manual"
     },
@@ -317,6 +386,15 @@
       "extractionState": "manual"
     },
     "Mindestens 12 Zeichen": {
+      "extractionState": "manual"
+    },
+    "Mit Face ID entsperren": {
+      "extractionState": "manual"
+    },
+    "Mit Passwort anmelden": {
+      "extractionState": "manual"
+    },
+    "Mit Touch ID entsperren": {
       "extractionState": "manual"
     },
     "Mit einem Tipp Ja oder Nein sagen.": {
@@ -385,6 +463,15 @@
     "Passwort wiederholen": {
       "extractionState": "manual"
     },
+    "Profil": {
+      "extractionState": "manual"
+    },
+    "Profil wird geladen": {
+      "extractionState": "manual"
+    },
+    "Profilbild ändern": {
+      "extractionState": "manual"
+    },
     "Prüfe Benutzername und Passwort. Hast du dein Passwort schon geändert, gilt das Startpasswort nicht mehr. Sonst hilft deine Leitung.": {
       "extractionState": "manual"
     },
@@ -406,6 +493,9 @@
     "Rangabzeichen, zwei Sterne": {
       "extractionState": "manual"
     },
+    "Richte zuerst Face ID oder Touch ID in den Einstellungen des iPhones ein.": {
+      "extractionState": "manual"
+    },
     "Schön, bist du da.": {
       "extractionState": "manual"
     },
@@ -421,10 +511,22 @@
     "Stellvertretende Leitung": {
       "extractionState": "manual"
     },
+    "Stellvertretung": {
+      "extractionState": "manual"
+    },
     "Stimmt überein": {
       "extractionState": "manual"
     },
+    "Teilnehmende Person": {
+      "extractionState": "manual"
+    },
     "Thema": {
+      "extractionState": "manual"
+    },
+    "Touch ID auf diesem Gerät hat sich geändert. Melde dich zur Sicherheit neu an.": {
+      "extractionState": "manual"
+    },
+    "Versuche es noch einmal.": {
       "extractionState": "manual"
     },
     "Wappen Kanton Zürich": {
