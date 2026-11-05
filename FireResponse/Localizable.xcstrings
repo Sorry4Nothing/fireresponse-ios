@@ -1,0 +1,312 @@
+{
+  "sourceLanguage": "de",
+  "strings": {
+    "%lld Minuten": {
+      "extractionState": "manual"
+    },
+    "%lld Sekunden": {
+      "extractionState": "manual"
+    },
+    "1 Sekunde": {
+      "extractionState": "manual"
+    },
+    "Admins melden sich im Admin-Bereich an. In der App geht das nicht.": {
+      "extractionState": "manual"
+    },
+    "Aktualisieren": {
+      "extractionState": "manual"
+    },
+    "Alle Anlässe von %@ auf einen Blick.": {
+      "extractionState": "manual"
+    },
+    "Alle Übungen deiner Einheit auf einen Blick.": {
+      "extractionState": "manual"
+    },
+    "Anmelden": {
+      "extractionState": "manual"
+    },
+    "Anmelden hat nicht geklappt": {
+      "extractionState": "manual"
+    },
+    "Ausgewählt": {
+      "extractionState": "manual"
+    },
+    "Benutzername": {
+      "extractionState": "manual"
+    },
+    "Bitte bestätige zuerst den Datenschutz.": {
+      "extractionState": "manual"
+    },
+    "Bitte gib deinen Benutzernamen und dein Passwort ein.": {
+      "extractionState": "manual"
+    },
+    "Bitte installiere die neue Version aus dem App Store.": {
+      "extractionState": "manual"
+    },
+    "Bitte melde dich neu an": {
+      "extractionState": "manual"
+    },
+    "Bitte warte %@ und versuche es dann nochmals.": {
+      "extractionState": "manual"
+    },
+    "Bitte warte einen Moment und versuche es dann nochmals.": {
+      "extractionState": "manual"
+    },
+    "Dann hilft dir die Leitung deiner Einheit weiter.": {
+      "extractionState": "manual"
+    },
+    "Das Passwort braucht mindestens 12 Zeichen.": {
+      "extractionState": "manual"
+    },
+    "Das Passwort darf höchstens 128 Zeichen lang sein.": {
+      "extractionState": "manual"
+    },
+    "Das Startpasswort stimmt nicht. Gib es nochmals ein.": {
+      "extractionState": "manual"
+    },
+    "Das liegt nicht an dir. Versuche es in ein paar Minuten nochmals.": {
+      "extractionState": "manual"
+    },
+    "Das neue Passwort muss anders sein als das Startpasswort.": {
+      "extractionState": "manual"
+    },
+    "Datenschutz": {
+      "extractionState": "manual"
+    },
+    "Datenschutz wird geladen": {
+      "extractionState": "manual"
+    },
+    "Datenschutzerklärung lesen": {
+      "extractionState": "manual"
+    },
+    "Dein Konto ist noch keiner Einheit zugewiesen. Das erledigt deine Jugendleitung. Frag dort nach.": {
+      "extractionState": "manual"
+    },
+    "Deine Kinder": {
+      "extractionState": "manual"
+    },
+    "Deine Teilnehmenden": {
+      "extractionState": "manual"
+    },
+    "Die beiden Passwörter sind nicht gleich.": {
+      "extractionState": "manual"
+    },
+    "Diese App ist zu alt": {
+      "extractionState": "manual"
+    },
+    "Diese Seite ist nur für die Leitung deiner Einheit. Wenn du denkst, das ist ein Fehler, frag deine Leitung.": {
+      "extractionState": "manual"
+    },
+    "Diese Übung gibt es nicht mehr. Vielleicht wurde sie verschoben oder abgesagt.": {
+      "extractionState": "manual"
+    },
+    "Dieses Passwort ist aus einem Datenleck bekannt. Wähle ein anderes.": {
+      "extractionState": "manual"
+    },
+    "Du hast ein Startpasswort von deiner Leitung bekommen. Wähle jetzt ein eigenes, das nur du kennst.": {
+      "extractionState": "manual"
+    },
+    "Du warst länger nicht aktiv. Zu deiner Sicherheit haben wir dich abgemeldet.": {
+      "extractionState": "manual"
+    },
+    "Eigenes Passwort wählen": {
+      "extractionState": "manual"
+    },
+    "Einen Moment …": {
+      "extractionState": "manual"
+    },
+    "Einwilligung": {
+      "extractionState": "manual"
+    },
+    "Erster Login": {
+      "extractionState": "manual"
+    },
+    "Etwas ist schiefgelaufen": {
+      "extractionState": "manual"
+    },
+    "FEUERWEHR": {
+      "extractionState": "manual"
+    },
+    "Fassung %lld": {
+      "extractionState": "manual"
+    },
+    "Fertig": {
+      "extractionState": "manual"
+    },
+    "FireResponse": {
+      "extractionState": "manual"
+    },
+    "Gib dein Startpasswort ein.": {
+      "extractionState": "manual"
+    },
+    "Ich habe die Datenschutzerklärung gelesen und bin einverstanden.": {
+      "extractionState": "manual"
+    },
+    "JUGEND": {
+      "extractionState": "manual"
+    },
+    "Ja": {
+      "extractionState": "manual"
+    },
+    "Ja für %@": {
+      "extractionState": "manual"
+    },
+    "Jugend- und Kinderfeuerwehr": {
+      "extractionState": "manual"
+    },
+    "Kanton Zürich": {
+      "extractionState": "manual"
+    },
+    "Kein Zugriff": {
+      "extractionState": "manual"
+    },
+    "Keine Einheit": {
+      "extractionState": "manual"
+    },
+    "Keine Verbindung": {
+      "extractionState": "manual"
+    },
+    "Los geht’s": {
+      "extractionState": "manual"
+    },
+    "Mindestens 12 Zeichen": {
+      "extractionState": "manual"
+    },
+    "Mit einem Tipp Ja oder Nein sagen.": {
+      "extractionState": "manual"
+    },
+    "Nach mehreren Fehlversuchen sperrt der Server dein Konto für einige Minuten, auch für das richtige Passwort. Warte kurz und versuche es dann in Ruhe nochmals. Sonst hilft deine Leitung.": {
+      "extractionState": "manual"
+    },
+    "Nein": {
+      "extractionState": "manual"
+    },
+    "Nein für %@": {
+      "extractionState": "manual"
+    },
+    "Neues Passwort": {
+      "extractionState": "manual"
+    },
+    "Nicht ausgewählt": {
+      "extractionState": "manual"
+    },
+    "Nicht das Startpasswort": {
+      "extractionState": "manual"
+    },
+    "Nicht dein Benutzername": {
+      "extractionState": "manual"
+    },
+    "Nicht gefunden": {
+      "extractionState": "manual"
+    },
+    "Nicht zugeordnet": {
+      "extractionState": "manual"
+    },
+    "Noch keine Übungen": {
+      "extractionState": "manual"
+    },
+    "Noch offen": {
+      "extractionState": "manual"
+    },
+    "Nochmals versuchen": {
+      "extractionState": "manual"
+    },
+    "Offen": {
+      "extractionState": "manual"
+    },
+    "Passwort": {
+      "extractionState": "manual"
+    },
+    "Passwort anzeigen": {
+      "extractionState": "manual"
+    },
+    "Passwort gespeichert": {
+      "extractionState": "manual"
+    },
+    "Passwort speichern": {
+      "extractionState": "manual"
+    },
+    "Passwort speichern hat nicht geklappt": {
+      "extractionState": "manual"
+    },
+    "Passwort verbergen": {
+      "extractionState": "manual"
+    },
+    "Passwort vergessen?": {
+      "extractionState": "manual"
+    },
+    "Passwort wiederholen": {
+      "extractionState": "manual"
+    },
+    "Prüfe Benutzername und Passwort. Hast du dein Passwort schon geändert, gilt das Startpasswort nicht mehr. Sonst hilft deine Leitung.": {
+      "extractionState": "manual"
+    },
+    "Prüfe dein Internet und versuche es nochmals.": {
+      "extractionState": "manual"
+    },
+    "Prüfe die Regeln unter dem neuen Passwort.": {
+      "extractionState": "manual"
+    },
+    "Prüfen": {
+      "extractionState": "manual"
+    },
+    "Rangabzeichen": {
+      "extractionState": "manual"
+    },
+    "Rangabzeichen, ein Stern": {
+      "extractionState": "manual"
+    },
+    "Rangabzeichen, zwei Sterne": {
+      "extractionState": "manual"
+    },
+    "Schön, bist du da.": {
+      "extractionState": "manual"
+    },
+    "Sobald die Leitung neue Übungen einträgt, siehst du sie hier.": {
+      "extractionState": "manual"
+    },
+    "Startpasswort": {
+      "extractionState": "manual"
+    },
+    "Stimmt überein": {
+      "extractionState": "manual"
+    },
+    "Wappen Kanton Zürich": {
+      "extractionState": "manual"
+    },
+    "Willkommen!": {
+      "extractionState": "manual"
+    },
+    "Willkommen, %@!": {
+      "extractionState": "manual"
+    },
+    "Wird geladen …": {
+      "extractionState": "manual"
+    },
+    "Zu den Übungen": {
+      "extractionState": "manual"
+    },
+    "Zu viele Versuche": {
+      "extractionState": "manual"
+    },
+    "Zurück zum Login": {
+      "extractionState": "manual"
+    },
+    "Zusagen": {
+      "extractionState": "manual"
+    },
+    "erfüllt": {
+      "extractionState": "manual"
+    },
+    "nicht erfüllt": {
+      "extractionState": "manual"
+    },
+    "Übungen": {
+      "extractionState": "manual"
+    },
+    "Übungen werden geladen": {
+      "extractionState": "manual"
+    }
+  },
+  "version": "1.0"
+}
