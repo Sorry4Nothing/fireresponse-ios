@@ -75,6 +75,7 @@ Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageRes
 - **Konto aufs Kind übertragen:** Zeile nur für Eltern (das Design kennt im Profil keine Hilfe).
 - **Gesperrt:** Zustand ohne Vorlage im Design; Aufbau wie `StateView` (Symbol, Titel, Satz, «Entsperren», Textknopf).
 - **Datenschutz:** «Stand» zeigt die Fassung (die API liefert kein Datum).
+
 ## Erster Start (Login, Passwort, Willkommen)
 
 Code in `FireResponse/Features/Onboarding/`, Ablauf in `App/AppModel.swift` (`phase`).
