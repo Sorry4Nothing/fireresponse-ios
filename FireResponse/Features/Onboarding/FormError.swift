@@ -54,6 +54,7 @@ enum FormError: Equatable, Error {
         switch self {
         case .invalidCredentials(let repeated):
             repeated
+                // swiftlint:disable:next line_length
                 ? "Nach mehreren Fehlversuchen sperrt der Server dein Konto für einige Minuten, auch für das richtige Passwort. Warte kurz und versuche es dann in Ruhe nochmals. Sonst hilft deine Leitung."
                 : "Prüfe Benutzername und Passwort. Hast du dein Passwort schon geändert, gilt das Startpasswort nicht mehr. Sonst hilft deine Leitung."
         case .missingCredentials: "Bitte gib deinen Benutzernamen und dein Passwort ein."

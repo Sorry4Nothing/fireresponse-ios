@@ -3,7 +3,6 @@ import os
 import Testing
 @testable import FireResponse
 
-
 /// Eigener Stub, damit die Tests dieser Datei nicht mit den globalen `FlowStub`-Tests der anderen Dateien kollidieren.
 private nonisolated final class FlowStub: URLProtocol, @unchecked Sendable {
     private struct State {
@@ -57,7 +56,9 @@ private nonisolated final class FlowStub: URLProtocol, @unchecked Sendable {
 private nonisolated let unitJSON = #"{"id":"11111111-1111-1111-1111-111111111111","name":"Einheit Test","typ":"jf","bezirk":"Bezirk","rolle":"kommandant"}"#
 
 private nonisolated func profileJSON(consented: Bool = true, mustChange: Bool = false, units: String = "[\(unitJSON)]") -> String {
-    #"{"id":"u1","name":"Anna Muster","benutzername":"anna","kantonsadmin":false,"zweiterFaktor":false,"einwilligung":\#(consented),"mussPasswortAendern":\#(mustChange),"pushProgramme":true,"einheiten":\#(units),"teilnehmende":[]}"#
+    #"{"id":"u1","name":"Anna Muster","benutzername":"anna","kantonsadmin":false,"zweiterFaktor":false,"#
+    + #""einwilligung":\#(consented),"mussPasswortAendern":\#(mustChange),"pushProgramme":true,"#
+    + #""einheiten":\#(units),"teilnehmende":[]}"#
 }
 
 private nonisolated func sessionJSON(mustChange: Bool = false) -> String {
@@ -218,9 +219,9 @@ struct OnboardingTests {
         #expect(model.phase == .ready)
         #expect(!model.knowsStartPassword)
         let signIn = try #require(FlowStub.recorded.first)
-        #expect(String(decoding: signIn.body, as: UTF8.self).contains(#""username":"anna""#))
+        #expect((String(bytes: signIn.body, encoding: .utf8) ?? "").contains(#""username":"anna""#))
         let change = try #require(FlowStub.recorded.first { $0.request.url?.path == "/api/auth/change-password" })
-        #expect(String(decoding: change.body, as: UTF8.self).contains(#""currentPassword":"start-pass""#))
+        #expect((String(bytes: change.body, encoding: .utf8) ?? "").contains(#""currentPassword":"start-pass""#))
     }
 
     @Test func passwordErrorCodesMapToFriendlyCases() {

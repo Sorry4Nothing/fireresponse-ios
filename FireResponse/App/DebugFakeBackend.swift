@@ -1,4 +1,6 @@
 #if DEBUG
+// Nur für Debug mit erfundenen Antworten: lange JSON-Zeilen und eine grosse Weiche sind hier bewusst.
+// swiftlint:disable line_length cyclomatic_complexity
 import Foundation
 import os
 
@@ -145,4 +147,5 @@ private nonisolated final class FakeBackendProtocol: URLProtocol, @unchecked Sen
         #"{"version":1,"abschnitte":[{"titel":"Was wir speichern","text":"Wir speichern deinen Namen, deine Zusagen und, wenn du es willst, dein Profilbild.\n\n– Keine Werbung\n\n– Keine Tracker"},{"titel":"Wer was sieht","text":"Dein Konto gehört zu genau einer Einheit. Nur die Leitung dieser Einheit sieht deine Zusagen."},{"titel":"Löschen","text":"Frag deine Leitung, wenn du deine Daten löschen lassen willst."}]}"#
     }
 }
+// swiftlint:enable line_length cyclomatic_complexity
 #endif
