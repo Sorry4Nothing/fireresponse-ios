@@ -40,3 +40,22 @@ Noch nicht als Baustein umgesetzt: Alert, Sheet, Umschalter, TabBar und Navigati
 - **RangAbzeichen:** `UIImage` liest PNG, kein SVG. Fehlt das Bild oder ist es unlesbar, zeichnet der Baustein den Platzhalter aus `Raenge.md` (das Design lässt die Zeile ohne Abzeichen). Ersetzen, sobald das Original vorliegt.
 - **Listenzeile:** Hintergrund (`surface-container-low`) und Schalter-Tint setzt der Aufrufer an der `List`.
 - **Entwicklungssprache:** der String Catalog hat `de` als Quellsprache, passend zum Projekt; `de-CH` ist noch nicht gesetzt.
+
+## Übungen (Issue #4)
+
+Ordner `FireResponse/Features/Exercises/`: `ExerciseLogic` (Regeln und Formate, rein), `ExerciseModels` (Laden, Antworten, Polling), Ansichten für Liste, Detail und Anmeldungen.
+
+- **Liste:** eine Abfrage für alle eigenen Einheiten (heute bis sechs Monate, die App schickt nie eine Einheit mit), gruppiert nach Schweizer Kalendertag, ab AX1 Datum über den Karten. Kein Rang auf der Karte. `.refreshable`.
+- **Anmeldefenster:** Knöpfe nur bei `teilnahmeOffen`; sonst «Anmeldung ab <Datum>» (`anmeldungAb`, nur wenn `anmeldbar` und aktiv), sonst «Die Anmeldung ist geschlossen» mit dem Stand als Chip. Die App rechnet das Fenster nie selbst.
+- **Antworten:** Ja/Nein je teilnehmende Person (`ResponseControl`) und für Leitende selbst (`setLeadership`). Eine Antwort läuft immer allein (Ladesperre), nach Erfolg wird das Programm neu gelesen (Kontaktperson kann wechseln). Nach 4 s erscheint ein Hinweis «Das dauert länger als sonst».
+- **Polling:** Detail liest alle 30 s still nach, nur sichtbar und bei aktiver App; während einer Antwort ruht es, ein Fehler lässt den alten Stand stehen.
+- **Anmeldungen:** nur lesend, für Leitung der Einheit und Kantonsadmin; sortiert offen, Ja, Nein; Rangabzeichen 24 pt.
+- **Kalender:** `EKEventEditViewController` (Systemdialog ausserhalb der App, keine Rechteabfrage, kein Lesen von Kalenderdaten).
+
+Abweichungen und Lücken:
+
+- Das Design zeichnet keine Kennzeichnung der Einheit in der Liste und nur «Detail Eltern»; bei mehreren Einheiten gibt es sie darum nicht (offen für das Design).
+- Treffpunkt/Schluss-Kacheln und Ort gibt die API nicht her; das Detail zeigt Zeit, Thema, Aufgebot und Info. «Verantwortlich» entfällt.
+- Rollennamen der Kontaktperson (Hauptleitung, stellvertretende Leitung) sind eine Annahme nach dem Design-Beispiel.
+- In der Liste steht «Kinder» im Umschalter der Anmeldungen wie im Design, auch wenn Teilnehmende selbst antworten.
+- Die Debug-Vorschauen (`#if DEBUG`) laufen erst, wenn das Projekt `DEBUG` als Swift-Bedingung setzt (Konfiguration setzt nur `GCC_PREPROCESSOR_DEFINITIONS`).
