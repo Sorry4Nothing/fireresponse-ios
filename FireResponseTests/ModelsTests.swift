@@ -92,7 +92,7 @@ struct ModelsTests {
         func json(_ settings: ProfileSettings) throws -> String {
             let encoder = JSONEncoder()
             encoder.outputFormatting = .sortedKeys
-            return String(decoding: try encoder.encode(settings), as: UTF8.self)
+            return String(bytes: try encoder.encode(settings), encoding: .utf8) ?? ""
         }
         #expect(try json(ProfileSettings(pushPrograms: false)) == #"{"pushProgramme":false}"#)
         #expect(try json(ProfileSettings(phone: .some("+41 79 000 00 00"))) == #"{"telefon":"+41 79 000 00 00"}"#)
