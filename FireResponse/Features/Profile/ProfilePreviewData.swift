@@ -17,6 +17,7 @@ enum ProfilePreviewData {
         "einheiten":[\#(parent ? "" : unitJSON)],"teilnehmende":[\#(childJSON)]}
         """#
         // Die Vorschau-JSON ist fest eingebaut; ein Fehler fiele sofort auf.
+        // swiftlint:disable:next force_try
         return try! JSONDecoder.api.decode(Profile.self, from: Data(json.utf8))
     }
 }

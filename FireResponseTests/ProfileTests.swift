@@ -13,6 +13,7 @@ struct SignOutTests {
         let client = ApiClient(baseURL: nil, appVersion: "1.0.0", store: sessions)
         let model = AppModel(api: FireResponseAPI(client: client))
         model.phase = .ready
+        // swiftlint:disable:next line_length
         let json = #"{"id":"x1","name":"Alex Muster","benutzername":"alex","kantonsadmin":false,"zweiterFaktor":false,"einwilligung":true,"mussPasswortAendern":false,"pushProgramme":true,"einheiten":[],"teilnehmende":[]}"#
         model.profile = try? JSONDecoder.api.decode(Profile.self, from: Data(json.utf8))
         #expect(model.profile != nil)
