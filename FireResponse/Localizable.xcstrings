@@ -1,16 +1,10 @@
 {
   "sourceLanguage": "de",
   "strings": {
-    "%@": {
-      "extractionState": "manual"
-    },
     "Abbrechen": {
       "extractionState": "manual"
     },
     "Abmelden": {
-      "extractionState": "manual"
-    },
-    "Abmelden?": {
       "extractionState": "manual"
     },
     "Aktualisieren": {
