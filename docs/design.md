@@ -63,6 +63,18 @@ Abweichungen und Lücken:
 - Rollennamen der Kontaktperson (Hauptleitung, stellvertretende Leitung) sind eine Annahme nach dem Design-Beispiel.
 - In der Liste steht «Kinder» im Umschalter der Anmeldungen wie im Design, auch wenn Teilnehmende selbst antworten.
 - Die Debug-Vorschauen (`#if DEBUG`) laufen erst, wenn das Projekt `DEBUG` als Swift-Bedingung setzt (Konfiguration setzt nur `GCC_PREPROCESSOR_DEFINITIONS`).
+## Profil und App-Sperre (Issue #5)
+
+Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageResizer`) und `Features/Lock/` (`AppLockController`, `BiometricAuthenticating`, `LockStore`, `appLock()`).
+
+- **Kein Gerätecode:** das Design nennt `.deviceOwnerAuthentication` als Fallback. Die App nutzt nur `.deviceOwnerAuthenticationWithBiometrics` (wie Android `BIOMETRIC_STRONG`); wer Face ID nicht nutzen kann, wählt «Mit Passwort anmelden» (meldet ab).
+- **Biometrie geändert:** weicht der Stand der Biometrie (`LAContext.domainState`) von dem der Einrichtung ab, bleibt die Sperre zu und fragt nicht; die Person meldet sich neu an (Android: Schlüssel ungültig, Login mit Passwort). Der Zustand liegt in der Keychain (nur dieses Gerät); er gilt, bis das Abmelden ihn löscht.
+- **Kamera:** «Foto aufnehmen» fehlt, es gibt nur «Foto auswählen» (`PhotosPicker`, braucht keine Berechtigung).
+- **Benachrichtigungen:** Zeile führt zu `PushSettingsView` statt «Kommt bald».
+- **Mehrere Einheiten:** eine Info-Zeile «Einheit · Bezirk …» je Einheit. Eltern sehen keine Einheitszeile, weil das Profil nur Einheiten mit Rolle nennt.
+- **Konto aufs Kind übertragen:** Zeile nur für Eltern (das Design kennt im Profil keine Hilfe).
+- **Gesperrt:** Zustand ohne Vorlage im Design; Aufbau wie `StateView` (Symbol, Titel, Satz, «Entsperren», Textknopf).
+- **Datenschutz:** «Stand» zeigt die Fassung (die API liefert kein Datum).
 ## Erster Start (Login, Passwort, Willkommen)
 
 Code in `FireResponse/Features/Onboarding/`, Ablauf in `App/AppModel.swift` (`phase`).
