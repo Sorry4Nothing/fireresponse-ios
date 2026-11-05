@@ -200,13 +200,6 @@ private struct AnswerSection: View {
                 if let error = model.error {
                     Notice(.error, title: "Antwort nicht gesendet", message: ExerciseMessage.text(for: error))
                 }
-                if hasParent {
-                    NavigationLink { TransferInfoView() } label: {
-                        Label("Konto aufs Kind übertragen", systemImage: "arrow.left.arrow.right")
-                            .font(.subheadline).foregroundStyle(Color.frAccentText)
-                            .frame(maxWidth: .infinity, minHeight: Sizes.touchTarget, alignment: .leading)
-                    }
-                }
             }
             .task(id: model.saving) {
                 slow = false
@@ -215,11 +208,6 @@ private struct AnswerSection: View {
                 slow = !Task.isCancelled
             }
         }
-    }
-
-    private var hasParent: Bool {
-        let parents = Set((profile?.participants ?? []).filter { $0.kind == "eltern" }.map(\.id))
-        return program.participants.contains { parents.contains($0.id) }
     }
 
     @ViewBuilder private var notice: some View {

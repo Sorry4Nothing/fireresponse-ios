@@ -13,6 +13,7 @@ struct RootView: View {
         }
         .tint(.frAccent)
         .appLock()
+        .pushRegistration()
     }
 }
 
@@ -23,5 +24,7 @@ struct MainTabs: View {
             Tab("Übungen", systemImage: "calendar") { ExercisesRootView() }
             Tab("Profil", systemImage: "person.crop.circle") { ProfileRootView() }
         }
+        // Das System fragt nur einmal; die Tabs erscheinen erst nach dem Willkommen.
+        .task { await PushCenter.shared.requestAuthorization() }
     }
 }

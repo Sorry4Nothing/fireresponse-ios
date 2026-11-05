@@ -63,11 +63,6 @@ struct ProfileRootView: View {
                     ListRow("Einheit · Bezirk \(unit.district)", systemImage: "building.2", value: "\(unit.name)")
                         .accessibilityElement(children: .combine)
                 }
-                if !profile.participants.isEmpty {
-                    NavigationLink { TransferInfoView() } label: {
-                        ListRow("Konto aufs Kind übertragen", systemImage: "person.2")
-                    }
-                }
                 Button(role: .destructive) { confirmSignOut = true } label: {
                     ListRow("Abmelden", systemImage: "rectangle.portrait.and.arrow.right", role: .destructive)
                 }

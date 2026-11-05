@@ -21,8 +21,11 @@ struct ExercisesStack: View {
     let profile: Profile?
     @State private var list: ExerciseListModel
     @State private var images: RemoteImages
+    @State private var path = NavigationPath()
+    private let router: PushRouter
 
-    init(service: any ExercisesService, profile: Profile?) {
+    init(service: any ExercisesService, profile: Profile?, router: PushRouter = PushCenter.shared.router) {
+        self.router = router
         self.service = service
         self.profile = profile
         _list = State(initialValue: ExerciseListModel(service: service))
@@ -30,7 +33,7 @@ struct ExercisesStack: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ExerciseListView(model: list)
                 .navigationTitle("Übungen")
                 .navigationDestination(for: DetailRoute.self) { route in
@@ -38,6 +41,9 @@ struct ExercisesStack: View {
                 }
                 .navigationDestination(for: RegistrationsRoute.self) { route in
                     RegistrationsView(route: route, service: service, images: images)
+                }
+                .onChange(of: router.pending, initial: true) {
+                    if case .appointment(let id) = router.consume() { path.append(DetailRoute(id: id)) }
                 }
         }
     }
