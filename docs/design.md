@@ -59,6 +59,7 @@ Abweichungen und Lücken:
 - Rollennamen der Kontaktperson (Hauptleitung, stellvertretende Leitung) sind eine Annahme nach dem Design-Beispiel.
 - In der Liste steht «Kinder» im Umschalter der Anmeldungen wie im Design, auch wenn Teilnehmende selbst antworten.
 - Die Debug-Vorschauen (`#if DEBUG`) laufen erst, wenn das Projekt `DEBUG` als Swift-Bedingung setzt (Konfiguration setzt nur `GCC_PREPROCESSOR_DEFINITIONS`).
+
 ## Erster Start (Login, Passwort, Willkommen)
 
 Code in `FireResponse/Features/Onboarding/`, Ablauf in `App/AppModel.swift` (`phase`).
