@@ -1,19 +1,43 @@
 {
   "sourceLanguage": "de",
   "strings": {
+    "%lld Minuten": {
+      "extractionState": "manual"
+    },
+    "%lld Sekunden": {
+      "extractionState": "manual"
+    },
+    "1 Sekunde": {
+      "extractionState": "manual"
+    },
     "Abbrechen": {
       "extractionState": "manual"
     },
     "Abmelden": {
       "extractionState": "manual"
     },
+    "Admins melden sich im Admin-Bereich an. In der App geht das nicht.": {
+      "extractionState": "manual"
+    },
     "Aktualisieren": {
+      "extractionState": "manual"
+    },
+    "Alle Anlässe von %@ auf einen Blick.": {
+      "extractionState": "manual"
+    },
+    "Alle Übungen deiner Einheit auf einen Blick.": {
       "extractionState": "manual"
     },
     "Anmelden": {
       "extractionState": "manual"
     },
+    "Anmelden hat nicht geklappt": {
+      "extractionState": "manual"
+    },
     "App": {
+      "extractionState": "manual"
+    },
+    "Ausgewählt": {
       "extractionState": "manual"
     },
     "Beim Start und nach 30 Sekunden im Hintergrund fragt die App nach Face ID. Ändert sich Face ID auf dem Gerät, meldest du dich neu an.": {
@@ -25,25 +49,58 @@
     "Benachrichtigungen": {
       "extractionState": "manual"
     },
+    "Benutzername": {
+      "extractionState": "manual"
+    },
     "Bestätige, dass du FireResponse so entsperren willst.": {
       "extractionState": "manual"
     },
     "Bild entfernen": {
       "extractionState": "manual"
     },
+    "Bitte bestätige zuerst den Datenschutz.": {
+      "extractionState": "manual"
+    },
+    "Bitte gib deinen Benutzernamen und dein Passwort ein.": {
+      "extractionState": "manual"
+    },
+    "Bitte installiere die neue Version aus dem App Store.": {
+      "extractionState": "manual"
+    },
     "Bitte melde dich neu an": {
+      "extractionState": "manual"
+    },
+    "Bitte warte %@ und versuche es dann nochmals.": {
+      "extractionState": "manual"
+    },
+    "Bitte warte einen Moment und versuche es dann nochmals.": {
       "extractionState": "manual"
     },
     "Danach brauchst du wieder Benutzername und Passwort.": {
       "extractionState": "manual"
     },
+    "Dann hilft dir die Leitung deiner Einheit weiter.": {
+      "extractionState": "manual"
+    },
     "Das Entsperren hat nicht geklappt.": {
+      "extractionState": "manual"
+    },
+    "Das Passwort braucht mindestens 12 Zeichen.": {
+      "extractionState": "manual"
+    },
+    "Das Passwort darf höchstens 128 Zeichen lang sein.": {
       "extractionState": "manual"
     },
     "Das Profilbild konnte nicht gespeichert werden.": {
       "extractionState": "manual"
     },
+    "Das Startpasswort stimmt nicht. Gib es nochmals ein.": {
+      "extractionState": "manual"
+    },
     "Das liegt nicht an dir. Versuche es in ein paar Minuten nochmals.": {
+      "extractionState": "manual"
+    },
+    "Das neue Passwort muss anders sein als das Startpasswort.": {
       "extractionState": "manual"
     },
     "Datenschutz": {
@@ -52,7 +109,22 @@
     "Datenschutz wird geladen": {
       "extractionState": "manual"
     },
+    "Datenschutzerklärung lesen": {
+      "extractionState": "manual"
+    },
     "Dein Konto ist noch keiner Einheit zugewiesen. Das erledigt deine Jugendleitung. Frag dort nach.": {
+      "extractionState": "manual"
+    },
+    "Deine Kinder": {
+      "extractionState": "manual"
+    },
+    "Deine Teilnehmenden": {
+      "extractionState": "manual"
+    },
+    "Die beiden Passwörter sind nicht gleich.": {
+      "extractionState": "manual"
+    },
+    "Diese App ist zu alt": {
       "extractionState": "manual"
     },
     "Diese Seite ist nur für die Leitung deiner Einheit. Wenn du denkst, das ist ein Fehler, frag deine Leitung.": {
@@ -61,10 +133,25 @@
     "Diese Übung gibt es nicht mehr. Vielleicht wurde sie verschoben oder abgesagt.": {
       "extractionState": "manual"
     },
+    "Dieses Passwort ist aus einem Datenleck bekannt. Wähle ein anderes.": {
+      "extractionState": "manual"
+    },
+    "Du hast ein Startpasswort von deiner Leitung bekommen. Wähle jetzt ein eigenes, das nur du kennst.": {
+      "extractionState": "manual"
+    },
     "Du warst länger nicht aktiv. Zu deiner Sicherheit haben wir dich abgemeldet.": {
       "extractionState": "manual"
     },
+    "Eigenes Passwort wählen": {
+      "extractionState": "manual"
+    },
+    "Einen Moment …": {
+      "extractionState": "manual"
+    },
     "Einheit · Bezirk %@": {
+      "extractionState": "manual"
+    },
+    "Einwilligung": {
       "extractionState": "manual"
     },
     "Elternteil": {
@@ -82,6 +169,9 @@
     "Entsperren": {
       "extractionState": "manual"
     },
+    "Erster Login": {
+      "extractionState": "manual"
+    },
     "Etwas ist schiefgelaufen": {
       "extractionState": "manual"
     },
@@ -94,6 +184,9 @@
     "Fassung %lld": {
       "extractionState": "manual"
     },
+    "Fertig": {
+      "extractionState": "manual"
+    },
     "FireResponse": {
       "extractionState": "manual"
     },
@@ -103,6 +196,12 @@
     "Gesperrt": {
       "extractionState": "manual"
     },
+    "Gib dein Startpasswort ein.": {
+      "extractionState": "manual"
+    },
+    "Ich habe die Datenschutzerklärung gelesen und bin einverstanden.": {
+      "extractionState": "manual"
+    },
     "JUGEND": {
       "extractionState": "manual"
     },
@@ -110,6 +209,12 @@
       "extractionState": "manual"
     },
     "Ja für %@": {
+      "extractionState": "manual"
+    },
+    "Jugend- und Kinderfeuerwehr": {
+      "extractionState": "manual"
+    },
+    "Kanton Zürich": {
       "extractionState": "manual"
     },
     "Kein Zugriff": {
@@ -136,6 +241,12 @@
     "Leitung": {
       "extractionState": "manual"
     },
+    "Los geht’s": {
+      "extractionState": "manual"
+    },
+    "Mindestens 12 Zeichen": {
+      "extractionState": "manual"
+    },
     "Mit Face ID entsperren": {
       "extractionState": "manual"
     },
@@ -145,10 +256,28 @@
     "Mit Touch ID entsperren": {
       "extractionState": "manual"
     },
+    "Mit einem Tipp Ja oder Nein sagen.": {
+      "extractionState": "manual"
+    },
+    "Nach mehreren Fehlversuchen sperrt der Server dein Konto für einige Minuten, auch für das richtige Passwort. Warte kurz und versuche es dann in Ruhe nochmals. Sonst hilft deine Leitung.": {
+      "extractionState": "manual"
+    },
     "Nein": {
       "extractionState": "manual"
     },
     "Nein für %@": {
+      "extractionState": "manual"
+    },
+    "Neues Passwort": {
+      "extractionState": "manual"
+    },
+    "Nicht ausgewählt": {
+      "extractionState": "manual"
+    },
+    "Nicht das Startpasswort": {
+      "extractionState": "manual"
+    },
+    "Nicht dein Benutzername": {
       "extractionState": "manual"
     },
     "Nicht gefunden": {
@@ -175,7 +304,22 @@
     "Passwort anzeigen": {
       "extractionState": "manual"
     },
+    "Passwort gespeichert": {
+      "extractionState": "manual"
+    },
+    "Passwort speichern": {
+      "extractionState": "manual"
+    },
+    "Passwort speichern hat nicht geklappt": {
+      "extractionState": "manual"
+    },
     "Passwort verbergen": {
+      "extractionState": "manual"
+    },
+    "Passwort vergessen?": {
+      "extractionState": "manual"
+    },
+    "Passwort wiederholen": {
       "extractionState": "manual"
     },
     "Profil": {
@@ -187,7 +331,13 @@
     "Profilbild ändern": {
       "extractionState": "manual"
     },
+    "Prüfe Benutzername und Passwort. Hast du dein Passwort schon geändert, gilt das Startpasswort nicht mehr. Sonst hilft deine Leitung.": {
+      "extractionState": "manual"
+    },
     "Prüfe dein Internet und versuche es nochmals.": {
+      "extractionState": "manual"
+    },
+    "Prüfe die Regeln unter dem neuen Passwort.": {
       "extractionState": "manual"
     },
     "Prüfen": {
@@ -205,10 +355,19 @@
     "Richte zuerst Face ID oder Touch ID in den Einstellungen des iPhones ein.": {
       "extractionState": "manual"
     },
+    "Schön, bist du da.": {
+      "extractionState": "manual"
+    },
     "Sobald die Leitung neue Übungen einträgt, siehst du sie hier.": {
       "extractionState": "manual"
     },
+    "Startpasswort": {
+      "extractionState": "manual"
+    },
     "Stellvertretung": {
+      "extractionState": "manual"
+    },
+    "Stimmt überein": {
       "extractionState": "manual"
     },
     "Teilnehmende Person": {
@@ -220,10 +379,37 @@
     "Versuche es noch einmal.": {
       "extractionState": "manual"
     },
+    "Wappen Kanton Zürich": {
+      "extractionState": "manual"
+    },
+    "Willkommen!": {
+      "extractionState": "manual"
+    },
+    "Willkommen, %@!": {
+      "extractionState": "manual"
+    },
+    "Wird geladen …": {
+      "extractionState": "manual"
+    },
     "Zu den Übungen": {
       "extractionState": "manual"
     },
+    "Zu viele Versuche": {
+      "extractionState": "manual"
+    },
     "Zurück zum Login": {
+      "extractionState": "manual"
+    },
+    "Zusagen": {
+      "extractionState": "manual"
+    },
+    "erfüllt": {
+      "extractionState": "manual"
+    },
+    "nicht erfüllt": {
+      "extractionState": "manual"
+    },
+    "Übungen": {
       "extractionState": "manual"
     },
     "Übungen werden geladen": {

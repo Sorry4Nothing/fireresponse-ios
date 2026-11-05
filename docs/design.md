@@ -53,3 +53,15 @@ Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageRes
 - **Konto aufs Kind übertragen:** Zeile nur für Eltern (das Design kennt im Profil keine Hilfe).
 - **Gesperrt:** Zustand ohne Vorlage im Design; Aufbau wie `StateView` (Symbol, Titel, Satz, «Entsperren», Textknopf).
 - **Datenschutz:** «Stand» zeigt die Fassung (die API liefert kein Datum).
+## Erster Start (Login, Passwort, Willkommen)
+
+Code in `FireResponse/Features/Onboarding/`, Ablauf in `App/AppModel.swift` (`phase`).
+
+- **Flamme und Wappen** liegen nicht als Bilddatei vor und sind in `BrandArt.swift` als SwiftUI-Shapes nach den SVGs der Login-Vorschau gezeichnet (Farben fest). Ersetzen, sobald das Design Assets liefert.
+- **Flamme kleiner als im Mockup** (230 statt 420 pt) und Teil des scrollenden Inhalts: Text liegt nie über Rot und Gelb (Kontrast). Der Inhalt beginnt darunter.
+- **Login-Panel** nutzt `surface-container-low` (Komponenten-README) statt `surface-container` (Design-README); die Felder heben sich auf beiden ab.
+- **Passwort:** zusätzlich das Feld «Startpasswort», wenn die App es nicht mehr im Arbeitsspeicher hat (App nach dem Login beendet). Fehlende Eingaben und verletzte Regeln zeigen einen Hinweis statt eines ausgegrauten Knopfs.
+- **Willkommen:** «Passwort gespeichert» als Chip mit Symbol und Wort; die Einwilligung zeigt den Text von `GET /einwilligung` in einer Karte über der Häkchen-Zeile. Der Einheitsname kommt aus `einheiten`; Eltern haben keine, dann steht «Jugend- und Kinderfeuerwehr».
+- **Keine Einheit** (weder Einheit noch Teilnehmende) wird vor der Einwilligung gezeigt: Ohne Einheit gibt es keine Daten, die man einwilligen könnte.
+- **Globale Ladesperre:** Solange eine Aktion läuft, ist der ganze Ablauf gesperrt (`AppModel.isBusy`) und «Einen Moment …» wird angesagt.
+- **Tastatur:** `FRTextField` hält seinen Fokus intern; «Weiter» springt darum nicht ins Passwortfeld.
