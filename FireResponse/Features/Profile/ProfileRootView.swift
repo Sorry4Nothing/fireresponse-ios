@@ -49,7 +49,7 @@ struct ProfileRootView: View {
                 Toggle(isOn: $unlockOn) { ListRow(unlockTitle, systemImage: unlockSymbol) }
                     .tint(.frSwitchOn)
                     .disabled(lock.biometryType == .none && !lock.isEnabled)
-                NavigationLink { PrivacyView(unitName: profile.units.first?.name) } label: {
+                NavigationLink { ProfilePrivacyView(unitName: profile.units.first?.name) } label: {
                     ListRow("Datenschutz", systemImage: "hand.raised")
                 }
             } header: {

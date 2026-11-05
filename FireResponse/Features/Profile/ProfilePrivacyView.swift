@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Datenschutzerklärung aus `GET /datenschutz` (der Text kommt vom Server, damit er ohne App-Update ändern kann).
-struct PrivacyView: View {
+struct ProfilePrivacyView: View {
     var unitName: String?
     @Environment(AppModel.self) private var model
     @State private var privacy: Privacy?
