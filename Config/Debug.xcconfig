@@ -1,1 +1,3 @@
 #include "Base.xcconfig"
+// Ohne diese Zeile gilt `#if DEBUG` nie (Vorschauen, Fake-Backend).
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) DEBUG
