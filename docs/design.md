@@ -40,3 +40,8 @@ Noch nicht als Baustein umgesetzt: Alert, Sheet, Umschalter, TabBar und Navigati
 - **RangAbzeichen:** `UIImage` liest PNG, kein SVG. Fehlt das Bild oder ist es unlesbar, zeichnet der Baustein den Platzhalter aus `Raenge.md` (das Design lässt die Zeile ohne Abzeichen). Ersetzen, sobald das Original vorliegt.
 - **Listenzeile:** Hintergrund (`surface-container-low`) und Schalter-Tint setzt der Aufrufer an der `List`.
 - **Entwicklungssprache:** der String Catalog hat `de` als Quellsprache, passend zum Projekt; `de-CH` ist noch nicht gesetzt.
+
+## Push (Issue #6)
+
+- Die Einstellungsseite «Benachrichtigungen» ist im Design nicht gezeichnet. Sie ist aus `ListRow` mit `Toggle` (Tint `switch-on`), `Notice` und `FRButton` gebaut: Schalter «Neue Übungen» und, nur für Personen mit Rolle in einer Einheit, «Neue Anmeldungen». Ein Schalter springt bei einem Fehler zurück und zeigt eine Meldung. Ist das System-Recht aus, steht oben ein Hinweis mit Weg in die Einstellungen; ist noch nie gefragt worden, ein Knopf «Mitteilungen erlauben».
+- Das Recht fragt die App nicht beim Start, sondern über `PushCenter.requestAuthorization()` (Einstellungen; der Integrationsschritt ruft es nach dem Willkommen).

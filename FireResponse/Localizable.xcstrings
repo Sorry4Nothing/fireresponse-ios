@@ -7,6 +7,9 @@
     "Anmelden": {
       "extractionState": "manual"
     },
+    "Benachrichtigungen": {
+      "extractionState": "manual"
+    },
     "Bitte melde dich neu an": {
       "extractionState": "manual"
     },
@@ -23,6 +26,12 @@
       "extractionState": "manual"
     },
     "Du warst länger nicht aktiv. Zu deiner Sicherheit haben wir dich abgemeldet.": {
+      "extractionState": "manual"
+    },
+    "Einstellungen öffnen": {
+      "extractionState": "manual"
+    },
+    "Erlaube sie, damit neue Übungen bei dir ankommen.": {
       "extractionState": "manual"
     },
     "Etwas ist schiefgelaufen": {
@@ -52,10 +61,31 @@
     "Keine Verbindung": {
       "extractionState": "manual"
     },
+    "Mitteilungen enthalten nie Namen von Kindern.": {
+      "extractionState": "manual"
+    },
+    "Mitteilungen erlauben": {
+      "extractionState": "manual"
+    },
+    "Mitteilungen sind ausgeschaltet": {
+      "extractionState": "manual"
+    },
+    "Mitteilungen sind noch nicht erlaubt": {
+      "extractionState": "manual"
+    },
     "Nein": {
       "extractionState": "manual"
     },
     "Nein für %@": {
+      "extractionState": "manual"
+    },
+    "Neue Anmeldungen": {
+      "extractionState": "manual"
+    },
+    "Neue Übungen": {
+      "extractionState": "manual"
+    },
+    "Neue Übungen, Erinnerungen, Absagen und Änderungen.": {
       "extractionState": "manual"
     },
     "Nicht gefunden": {
@@ -88,6 +118,9 @@
     "Prüfe dein Internet und versuche es nochmals.": {
       "extractionState": "manual"
     },
+    "Prüfe die Verbindung und versuche es noch einmal.": {
+      "extractionState": "manual"
+    },
     "Prüfen": {
       "extractionState": "manual"
     },
@@ -100,7 +133,16 @@
     "Rangabzeichen, zwei Sterne": {
       "extractionState": "manual"
     },
+    "Schalte sie in den Einstellungen des iPhones ein, sonst kommen keine an.": {
+      "extractionState": "manual"
+    },
     "Sobald die Leitung neue Übungen einträgt, siehst du sie hier.": {
+      "extractionState": "manual"
+    },
+    "Speichern hat nicht geklappt": {
+      "extractionState": "manual"
+    },
+    "Wenn sich jemand für eine Übung deiner Einheit an- oder abmeldet.": {
       "extractionState": "manual"
     },
     "Zu den Übungen": {

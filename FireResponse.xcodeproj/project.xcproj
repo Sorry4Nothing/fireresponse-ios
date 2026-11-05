@@ -19,6 +19,17 @@
   "localizations": {
     "development": "de"
   },
+  "packages": [
+    {
+      "kind": "remote",
+      "name": "firebase-ios-sdk",
+      "repository": "https://github.com/firebase/firebase-ios-sdk",
+      "version": {
+        "version-range-min": "12.0.0",
+        "version-range-max": "13.0.0"
+      }
+    }
+  ],
   "files": [
     {
       "kind": "folder",
@@ -63,6 +74,15 @@
       "id": "000000000000000100000000",
       "product": "Products/FireResponse.app",
       "product-type": "application",
+      "package-product-members": [
+        {
+          "package": "firebase-ios-sdk",
+          "product-name": "FirebaseMessaging",
+          "build-phase": {
+            "build-phase": "frameworks"
+          }
+        }
+      ],
       "build-phases": [
         "compile-sources",
         "frameworks",
@@ -74,6 +94,7 @@
         "SWIFT_APPROACHABLE_CONCURRENCY": "YES",
         "SWIFT_DEFAULT_ACTOR_ISOLATION": "MainActor",
         "CODE_SIGN_STYLE": "Automatic",
+        "CODE_SIGN_ENTITLEMENTS": "Config/FireResponse.entitlements",
         "CURRENT_PROJECT_VERSION": "1",
         "MARKETING_VERSION": "1.0.0",
         "GENERATE_INFOPLIST_FILE": "YES",
