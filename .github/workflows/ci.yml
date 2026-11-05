@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Lokale Konfiguration aus der Vorlage
+        run: cp Config/Local.example.xcconfig Config/Local.xcconfig
+      - name: SwiftLint
+        run: |
+          brew install swiftlint
+          swiftlint --strict
+      - name: Simulator bereitstellen
+        run: |
+          xcrun simctl list runtimes
+          if ! xcrun simctl list runtimes available | grep -q "iOS"; then
+            xcodebuild -downloadPlatform iOS
+          fi
+          RUNTIME=$(xcrun simctl list runtimes available -j | python3 -c "import json,sys; print([r for r in json.load(sys.stdin)['runtimes'] if r['platform']=='iOS'][-1]['identifier'])")
+          echo "SIM_UDID=$(xcrun simctl create ci-iphone com.apple.CoreSimulator.SimDeviceType.iPhone-17 "$RUNTIME")" >> "$GITHUB_ENV"
+      - name: Build und Tests
+        run: |
+          xcodebuild test -project FireResponse.xcodeproj -scheme FireResponse \
+            -destination "platform=iOS Simulator,id=$SIM_UDID" CODE_SIGNING_ALLOWED=NO

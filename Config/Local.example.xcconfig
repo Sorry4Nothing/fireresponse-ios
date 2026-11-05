@@ -1,0 +1,4 @@
+// Vorlage. Nach Config/Local.xcconfig kopieren (wird nicht eingecheckt) und echte Werte eintragen.
+// In URLs «:/$()/» statt «://» schreiben, sonst gilt der Rest der Zeile als Kommentar.
+API_BASE_URL = https:/$()/api.example.org
+DEVELOPMENT_TEAM =

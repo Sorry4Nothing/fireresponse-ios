@@ -1,0 +1,9 @@
+// Gemeinsame Werte. In .xcconfig beginnt «//» einen Kommentar: in URLs «:/$()/» statt «://» schreiben.
+APP_BUNDLE_IDENTIFIER = ch.fireresponse.app
+PRODUCT_BUNDLE_IDENTIFIER = $(APP_BUNDLE_IDENTIFIER)
+INFOPLIST_KEY_CFBundleDisplayName = FireResponse
+INFOPLIST_KEY_NSFaceIDUsageDescription = Damit du FireResponse mit Face ID entsperren kannst.
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait
+ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
+// Lokale Werte (API_BASE_URL, DEVELOPMENT_TEAM): Config/Local.xcconfig, nicht im Repo.
+#include? "Local.xcconfig"
