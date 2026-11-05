@@ -64,6 +64,7 @@ Abweichungen und Lücken:
 - Rollennamen der Kontaktperson (Hauptleitung, stellvertretende Leitung) sind eine Annahme nach dem Design-Beispiel.
 - In der Liste steht «Kinder» im Umschalter der Anmeldungen wie im Design, auch wenn Teilnehmende selbst antworten.
 - Die Debug-Vorschauen (`#if DEBUG`) laufen erst, wenn das Projekt `DEBUG` als Swift-Bedingung setzt (Konfiguration setzt nur `GCC_PREPROCESSOR_DEFINITIONS`).
+
 ## Profil und App-Sperre (Issue #5)
 
 Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageResizer`) und `Features/Lock/` (`AppLockController`, `BiometricAuthenticating`, `LockStore`, `appLock()`).
@@ -76,6 +77,7 @@ Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageRes
 - **Konto aufs Kind übertragen:** Zeile nur für Eltern (das Design kennt im Profil keine Hilfe).
 - **Gesperrt:** Zustand ohne Vorlage im Design; Aufbau wie `StateView` (Symbol, Titel, Satz, «Entsperren», Textknopf).
 - **Datenschutz:** «Stand» zeigt die Fassung (die API liefert kein Datum).
+
 
 
 ## Erster Start (Login, Passwort, Willkommen)
