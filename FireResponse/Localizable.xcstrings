@@ -1,16 +1,61 @@
 {
   "sourceLanguage": "de",
   "strings": {
+    "%@": {
+      "extractionState": "manual"
+    },
+    "Abbrechen": {
+      "extractionState": "manual"
+    },
+    "Abmelden": {
+      "extractionState": "manual"
+    },
+    "Abmelden?": {
+      "extractionState": "manual"
+    },
     "Aktualisieren": {
       "extractionState": "manual"
     },
     "Anmelden": {
       "extractionState": "manual"
     },
+    "App": {
+      "extractionState": "manual"
+    },
+    "Beim Start und nach 30 Sekunden im Hintergrund fragt die App nach Face ID. Ändert sich Face ID auf dem Gerät, meldest du dich neu an.": {
+      "extractionState": "manual"
+    },
+    "Beim Start und nach 30 Sekunden im Hintergrund fragt die App nach Touch ID. Ändert sich Touch ID auf dem Gerät, meldest du dich neu an.": {
+      "extractionState": "manual"
+    },
+    "Benachrichtigungen": {
+      "extractionState": "manual"
+    },
+    "Bestätige, dass du FireResponse so entsperren willst.": {
+      "extractionState": "manual"
+    },
+    "Bild entfernen": {
+      "extractionState": "manual"
+    },
     "Bitte melde dich neu an": {
       "extractionState": "manual"
     },
+    "Danach brauchst du wieder Benutzername und Passwort.": {
+      "extractionState": "manual"
+    },
+    "Das Entsperren hat nicht geklappt.": {
+      "extractionState": "manual"
+    },
+    "Das Profilbild konnte nicht gespeichert werden.": {
+      "extractionState": "manual"
+    },
     "Das liegt nicht an dir. Versuche es in ein paar Minuten nochmals.": {
+      "extractionState": "manual"
+    },
+    "Datenschutz": {
+      "extractionState": "manual"
+    },
+    "Datenschutz wird geladen": {
       "extractionState": "manual"
     },
     "Dein Konto ist noch keiner Einheit zugewiesen. Das erledigt deine Jugendleitung. Frag dort nach.": {
@@ -25,13 +70,43 @@
     "Du warst länger nicht aktiv. Zu deiner Sicherheit haben wir dich abgemeldet.": {
       "extractionState": "manual"
     },
+    "Einheit · Bezirk %@": {
+      "extractionState": "manual"
+    },
+    "Elternteil": {
+      "extractionState": "manual"
+    },
+    "Entsperre FireResponse mit Face ID.": {
+      "extractionState": "manual"
+    },
+    "Entsperre FireResponse mit Touch ID.": {
+      "extractionState": "manual"
+    },
+    "Entsperre FireResponse.": {
+      "extractionState": "manual"
+    },
+    "Entsperren": {
+      "extractionState": "manual"
+    },
     "Etwas ist schiefgelaufen": {
       "extractionState": "manual"
     },
     "FEUERWEHR": {
       "extractionState": "manual"
     },
+    "Face ID auf diesem Gerät hat sich geändert. Melde dich zur Sicherheit neu an.": {
+      "extractionState": "manual"
+    },
+    "Fassung %lld": {
+      "extractionState": "manual"
+    },
     "FireResponse": {
+      "extractionState": "manual"
+    },
+    "Foto auswählen": {
+      "extractionState": "manual"
+    },
+    "Gesperrt": {
       "extractionState": "manual"
     },
     "JUGEND": {
@@ -50,6 +125,30 @@
       "extractionState": "manual"
     },
     "Keine Verbindung": {
+      "extractionState": "manual"
+    },
+    "Kinder": {
+      "extractionState": "manual"
+    },
+    "Kommandant": {
+      "extractionState": "manual"
+    },
+    "Konto": {
+      "extractionState": "manual"
+    },
+    "Konto aufs Kind übertragen": {
+      "extractionState": "manual"
+    },
+    "Leitung": {
+      "extractionState": "manual"
+    },
+    "Mit Face ID entsperren": {
+      "extractionState": "manual"
+    },
+    "Mit Passwort anmelden": {
+      "extractionState": "manual"
+    },
+    "Mit Touch ID entsperren": {
       "extractionState": "manual"
     },
     "Nein": {
@@ -85,6 +184,15 @@
     "Passwort verbergen": {
       "extractionState": "manual"
     },
+    "Profil": {
+      "extractionState": "manual"
+    },
+    "Profil wird geladen": {
+      "extractionState": "manual"
+    },
+    "Profilbild ändern": {
+      "extractionState": "manual"
+    },
     "Prüfe dein Internet und versuche es nochmals.": {
       "extractionState": "manual"
     },
@@ -100,7 +208,22 @@
     "Rangabzeichen, zwei Sterne": {
       "extractionState": "manual"
     },
+    "Richte zuerst Face ID oder Touch ID in den Einstellungen des iPhones ein.": {
+      "extractionState": "manual"
+    },
     "Sobald die Leitung neue Übungen einträgt, siehst du sie hier.": {
+      "extractionState": "manual"
+    },
+    "Stellvertretung": {
+      "extractionState": "manual"
+    },
+    "Teilnehmende Person": {
+      "extractionState": "manual"
+    },
+    "Touch ID auf diesem Gerät hat sich geändert. Melde dich zur Sicherheit neu an.": {
+      "extractionState": "manual"
+    },
+    "Versuche es noch einmal.": {
       "extractionState": "manual"
     },
     "Zu den Übungen": {
