@@ -12,6 +12,8 @@ struct ProfileRootView: View {
     @State private var signingOut = false
     @State private var unlockOn = false
     @State private var badges: [String: Data] = [:]
+    @State private var logos: [String: Data] = [:]
+    @State private var settledLogos: Set<String> = []
     @AccessibilityFocusState private var signOutFocused: Bool
 
     var body: some View {
@@ -60,8 +62,7 @@ struct ProfileRootView: View {
             .listRowBackground(Color.frSurfaceContainerLow)
             Section("Konto") {
                 ForEach(profile.units) { unit in
-                    ListRow("Einheit · Bezirk \(unit.district)", systemImage: "building.2", value: "\(unit.name)")
-                        .accessibilityElement(children: .combine)
+                    UnitRow(unit: unit, logo: logos[unit.id], settled: settledLogos.contains(unit.id))
                 }
                 Button(role: .destructive) { confirmSignOut = true } label: {
                     ListRow("Abmelden", systemImage: "rectangle.portrait.and.arrow.right", role: .destructive)
@@ -92,6 +93,7 @@ struct ProfileRootView: View {
             }
         }
         .task(id: profile.participants.compactMap(\.badge?.imagePath)) { await loadBadges(profile) }
+        .task(id: profile.units.map(\.id)) { await loadLogos(profile) }
     }
 
     private var unlockTitle: LocalizedStringResource {
@@ -116,10 +118,38 @@ struct ProfileRootView: View {
         }
     }
 
+    private func loadLogos(_ profile: Profile) async {
+        for unit in profile.units where !settledLogos.contains(unit.id) {
+            if case .ok(let data) = await model.api.unitLogo(unitId: unit.id) { logos[unit.id] = data }
+            settledLogos.insert(unit.id)
+        }
+    }
+
     private func loadBadges(_ profile: Profile) async {
         for path in profile.participants.compactMap(\.badge?.imagePath) where badges[path] == nil {
             if case .ok(let data) = await model.api.badgeImage(path: path) { badges[path] = data }
         }
+    }
+}
+
+/// Eine Einheit des Kontos: Logo (sonst «JF» oder «KF»), Name und Bezirk. VoiceOver liest Name und Bezirk, das Logo ist Zierde.
+private struct UnitRow: View {
+    let unit: ProfileUnit
+    let logo: Data?
+    let settled: Bool
+
+    var body: some View {
+        HStack(spacing: Spacing.s3) {
+            UnitMark(data: logo, type: unit.type, settled: settled, size: 32)
+            VStack(alignment: .leading, spacing: Spacing.s1) {
+                Text(verbatim: unit.name).foregroundStyle(Color.frOnSurface)
+                Text("Bezirk \(unit.district)").font(.subheadline).foregroundStyle(Color.frOnSurfaceVariant)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(minHeight: Sizes.touchTarget)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("Einheit \(unit.name), Bezirk \(unit.district)"))
     }
 }
 

@@ -34,7 +34,7 @@ struct ExercisesStack: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            ExerciseListView(model: list)
+            ExerciseListView(model: list, images: images)
                 .navigationTitle("Übungen")
                 .navigationDestination(for: DetailRoute.self) { route in
                     ExerciseDetailView(id: route.id, service: service, profile: profile, images: images)
@@ -51,6 +51,7 @@ struct ExercisesStack: View {
 
 struct ExerciseListView: View {
     let model: ExerciseListModel
+    let images: RemoteImages
 
     var body: some View {
         Group {
@@ -67,7 +68,7 @@ struct ExerciseListView: View {
                         if let error = model.refreshError {
                             Notice(.error, title: "Aktualisieren hat nicht geklappt", message: ExerciseMessage.text(for: error))
                         }
-                        ForEach(days) { DayRow(day: $0, today: model.today) }
+                        ForEach(days) { DayRow(day: $0, today: model.today, images: images) }
                     }
                     .padding(.horizontal, Spacing.s4)
                     .padding(.bottom, Spacing.s4)
@@ -99,6 +100,7 @@ extension ApiError {
 private struct DayRow: View {
     let day: ProgramDay
     let today: SwissDay
+    let images: RemoteImages
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
@@ -130,7 +132,7 @@ private struct DayRow: View {
 
     private var cards: some View {
         VStack(spacing: Spacing.s2) {
-            ForEach(day.programs) { ExerciseCard(program: $0, today: today) }
+            ForEach(day.programs) { ExerciseCard(program: $0, today: today, images: images) }
         }
     }
 }
@@ -140,13 +142,16 @@ private struct DayRow: View {
 private struct ExerciseCard: View {
     let program: Program
     let today: SwissDay
+    let images: RemoteImages
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         NavigationLink(value: DetailRoute(id: program.id)) {
             VStack(alignment: .leading, spacing: Spacing.s1) {
                 Text(ExerciseFormat.timeText(program)).font(.footnote.weight(.semibold)).monospacedDigit().foregroundStyle(Color.frAccentText)
+                    .padding(.trailing, UnitMark.reservedWidth)
                 Text(program.title).font(.frCardTitle).foregroundStyle(Color.frOnSurface)
+                    .padding(.trailing, UnitMark.reservedWidth)
                 if program.status == "abgesagt" { CancelledChip() }
                 if program.status == "pruefen" { StatusChip(.review) }
                 ForEach(Array(ExerciseFormat.statusSentences(program).enumerated()), id: \.offset) { _, line in
@@ -160,6 +165,11 @@ private struct ExerciseCard: View {
             .padding(typeSize.isAccessibilitySize ? Spacing.s4 : Spacing.s3)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(minHeight: Sizes.touchTarget)
+            .overlay(alignment: .topTrailing) {
+                let key = RemoteImages.logoKey(program.unit.id)
+                UnitMark(data: images.data[key], type: program.unit.type, settled: images.settledLogos.contains(key))
+                    .padding(typeSize.isAccessibilitySize ? Spacing.s4 : Spacing.s3)
+            }
             .background(Color.frSurfaceContainerLow, in: RoundedRectangle(radius: Radius.md))
             .contentShape(RoundedRectangle(radius: Radius.md))
         }
@@ -167,6 +177,7 @@ private struct ExerciseCard: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(ExerciseFormat.cardSentence(program, today: today))
         .accessibilityAddTraits(.isButton)
+        .task(id: program.unit.id) { await images.loadLogo(program.unit) }
     }
 }
 
