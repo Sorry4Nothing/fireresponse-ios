@@ -49,24 +49,40 @@ struct ProfileImageTests {
         return output as Data
     }
 
-    @Test func shrinksLargeImageBelowFiveMebibytes() throws {
-        let original = try noisyJPEG(side: 3000)
-        #expect(original.count > ProfileImageResizer.maxBytes)
-        let result = try #require(ProfileImageResizer.jpeg(from: original))
-        #expect(result.count <= ProfileImageResizer.maxBytes)
-        #expect(result.starts(with: [0xFF, 0xD8]))
-        let size = try #require(CGImageSourceCreateWithData(result as CFData, nil).flatMap { CGImageSourceCopyPropertiesAtIndex($0, 0, nil) as? [CFString: Any] })
-        #expect((size[kCGImagePropertyPixelWidth] as? Int ?? .max) <= 1024)
+    private func size(of data: Data) throws -> (width: Int, height: Int) {
+        let props = try #require(CGImageSourceCreateWithData(data as CFData, nil).flatMap { CGImageSourceCopyPropertiesAtIndex($0, 0, nil) as? [CFString: Any] })
+        return (props[kCGImagePropertyPixelWidth] as? Int ?? 0, props[kCGImagePropertyPixelHeight] as? Int ?? 0)
     }
 
-    @Test func keepsShrinkingUntilTheLimitHolds() throws {
-        let original = try noisyJPEG(side: 1500)
-        let limit = 60_000
-        let result = try #require(ProfileImageResizer.jpeg(from: original, maxBytes: limit))
-        #expect(result.count <= limit)
+    @Test func cropsToSquareJPEGWithoutMetadata() throws {
+        let result = try #require(ProfileImageResizer.jpeg(from: noisyJPEG(side: 1500), crop: ProfileImageCrop()))
+        #expect(result.starts(with: [0xFF, 0xD8]))
+        let dimensions = try size(of: result)
+        #expect(dimensions.width == 512 && dimensions.height == 512)
     }
 
     @Test func rejectsDataThatIsNoImage() {
-        #expect(ProfileImageResizer.jpeg(from: Data("kein Bild".utf8)) == nil)
+        #expect(ProfileImageResizer.jpeg(from: Data("kein Bild".utf8), crop: ProfileImageCrop()) == nil)
+        #expect(ProfileImageResizer.preview(from: Data("kein Bild".utf8)) == nil)
+    }
+
+    @Test func defaultCropIsTheCenterSquare() {
+        let square = ProfileImageCrop().square(width: 400, height: 300)
+        #expect(square == CGRect(x: 50, y: 0, width: 300, height: 300))
+    }
+
+    @Test func zoomShrinksTheSquare() {
+        let square = ProfileImageCrop(zoom: 2).square(width: 400, height: 300)
+        #expect(square == CGRect(x: 125, y: 75, width: 150, height: 150))
+    }
+
+    @Test func movingStopsAtTheEdge() {
+        let crop = ProfileImageCrop(zoom: 2).moved(dx: 10_000, dy: -10_000, width: 400, height: 300)
+        #expect(crop.square(width: 400, height: 300) == CGRect(x: 250, y: 0, width: 150, height: 150))
+    }
+
+    @Test func zoomIsLimited() {
+        #expect(ProfileImageCrop().zoomed(to: 9, width: 400, height: 300).zoom == ProfileImageCrop.maxZoom)
+        #expect(ProfileImageCrop().zoomed(to: 0.2, width: 400, height: 300).zoom == 1)
     }
 }

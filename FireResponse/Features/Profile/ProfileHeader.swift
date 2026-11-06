@@ -8,6 +8,7 @@ struct ProfileHeader: View {
     @State private var imageData: Data?
     @State private var pickerShown = false
     @State private var picked: PhotosPickerItem?
+    @State private var cropping: CropSession?
     @State private var failed = false
     @State private var busy = false
 
@@ -32,7 +33,17 @@ struct ProfileHeader: View {
         .onChange(of: picked) { _, item in
             guard let item else { return }
             picked = nil
-            Task { await upload(item) }
+            Task { await startCrop(item) }
+        }
+        .fullScreenCover(item: $cropping) { session in
+            CropImageView(
+                session: session,
+                onCancel: { cropping = nil },
+                onDone: { crop in
+                    cropping = nil
+                    Task { await upload(session.data, crop: crop) }
+                }
+            )
         }
         .task(id: profile.imagePath) { await loadImage() }
     }
@@ -76,12 +87,19 @@ struct ProfileHeader: View {
         if case .ok(let data) = await model.api.personImage(path: path) { imageData = data }
     }
 
-    private func upload(_ item: PhotosPickerItem) async {
+    private func startCrop(_ item: PhotosPickerItem) async {
+        failed = false
+        guard let raw = try? await item.loadTransferable(type: Data.self),
+              let preview = await Task.detached(operation: { ProfileImageResizer.preview(from: raw) }).value
+        else { failed = true; return }
+        cropping = CropSession(data: raw, preview: preview)
+    }
+
+    private func upload(_ raw: Data, crop: ProfileImageCrop) async {
         busy = true
         failed = false
         defer { busy = false }
-        guard let raw = try? await item.loadTransferable(type: Data.self),
-              let jpeg = await Task.detached(operation: { ProfileImageResizer.jpeg(from: raw) }).value,
+        guard let jpeg = await Task.detached(operation: { ProfileImageResizer.jpeg(from: raw, crop: crop) }).value,
               case .ok = await model.api.setMyImage(jpeg)
         else { failed = true; return }
         await refresh()
