@@ -15,6 +15,18 @@ final class RemoteImages {
         if let bytes = await service.personImage(path: path).value { data[path] = bytes }
     }
 
+    /// Logos stehen unter `logoKey`; `settledLogos` hält fest, welche fertig sind (geladen oder ohne Logo), damit das Kürzel nicht kurz aufblitzt.
+    private(set) var settledLogos: Set<String> = []
+
+    nonisolated static func logoKey(_ unitId: String) -> String { "logo:" + unitId }
+
+    func loadLogo(_ unit: ProgramUnit) async {
+        let key = Self.logoKey(unit.id)
+        guard requested.insert(key).inserted else { return }
+        if let bytes = await service.unitLogo(unitId: unit.id).value { data[key] = bytes }
+        settledLogos.insert(key)
+    }
+
     func loadBadge(_ badge: Badge?) async {
         guard let path = badge?.imagePath, requested.insert(path).inserted else { return }
         if let bytes = await service.badgeImage(path: path).value { data[path] = bytes }

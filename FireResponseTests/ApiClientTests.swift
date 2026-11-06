@@ -222,6 +222,18 @@ struct ApiClientTests {
         #expect(StubURLProtocol.recorded.count == 2)
     }
 
+    @Test func unitLogoLoadsOnlyTheUnitLogoPath() async {
+        let (_, api, _) = makeClient(cookie: "session=abc") { _ in StubReply(200, json: "png") }
+        let id = "0f8fad5b-d9cb-469f-a165-70867728950e"
+
+        #expect(await api.unitLogo(unitId: id).value == Data("png".utf8))
+        #expect(StubURLProtocol.recorded.last?.request.url?.path == "/api/v1/einheiten/\(id)/logo")
+        // Eine Kennung, die keine UUID ist, geht nie hinaus.
+        let before = StubURLProtocol.recorded.count
+        #expect(await api.unitLogo(unitId: "../ich").error == .notFound)
+        #expect(StubURLProtocol.recorded.count == before)
+    }
+
     @Test func tooLargeImageIsRejected() async {
         let (_, api, _) = makeClient { _ in
             var reply = StubReply(200)

@@ -45,6 +45,7 @@ final class FakeExercises: ExercisesService, @unchecked Sendable {
 
     func personImage(path: String) async -> ApiResult<Data> { .failure(.notFound) }
     func badgeImage(path: String) async -> ApiResult<Data> { .failure(.notFound) }
+    func unitLogo(unitId: String) async -> ApiResult<Data> { .failure(.notFound) }
 }
 
 nonisolated func makeProgram(
@@ -66,6 +67,12 @@ nonisolated func makeProgram(
 
 @MainActor
 struct ExerciseTests {
+    @Test func cardSentenceNamesTheUnit() throws {
+        let program = try makeProgram()
+        let today = try #require(SwissDay("2027-03-01"))
+        #expect(ExerciseFormat.cardSentence(program, today: today).contains("JF Beispielstadt"))
+    }
+
     let today = SwissDay("2027-02-01") ?? SwissDay(date: .now)
 
     @Test func windowOpensOnRegistrationFrom() throws {

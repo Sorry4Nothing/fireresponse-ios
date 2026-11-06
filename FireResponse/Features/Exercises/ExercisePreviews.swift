@@ -101,6 +101,7 @@ final class PreviewExercisesService: ExercisesService, @unchecked Sendable {
 
     func personImage(path: String) async -> ApiResult<Data> { .failure(.notFound) }
     func badgeImage(path: String) async -> ApiResult<Data> { .failure(.notFound) }
+    func unitLogo(unitId: String) async -> ApiResult<Data> { .failure(.notFound) }
 
     static var profile: Profile? {
         try? JSONDecoder.api.decode(Profile.self, from: Data("""

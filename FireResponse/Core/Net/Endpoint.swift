@@ -15,7 +15,7 @@ nonisolated enum Endpoint: CaseIterable, Sendable {
     case me, updateMe, putMyImage, deleteMyImage
     case consent, giveConsent, privacy
     case programs, program, participations, setParticipation, setLeadership
-    case unitContact, badgeImage, personImage
+    case unitContact, badgeImage, personImage, unitLogo
     case pushToken
 
     var method: HTTPMethod {
@@ -24,7 +24,7 @@ nonisolated enum Endpoint: CaseIterable, Sendable {
         case .updateMe: .patch
         case .putMyImage, .giveConsent, .setParticipation, .setLeadership, .pushToken: .put
         case .deleteMyImage: .delete
-        case .session, .me, .consent, .privacy, .programs, .program, .participations, .unitContact, .badgeImage, .personImage: .get
+        case .session, .me, .consent, .privacy, .programs, .program, .participations, .unitContact, .badgeImage, .personImage, .unitLogo: .get
         }
     }
 
@@ -46,6 +46,7 @@ nonisolated enum Endpoint: CaseIterable, Sendable {
         case .setLeadership: "/api/v1/programme/{id}/leitung"
         case .unitContact: "/api/v1/einheiten/{einheitId}/kontakt"
         case .badgeImage: "/api/v1/raenge/{id}/abzeichen"
+        case .unitLogo: "/api/v1/einheiten/{einheitId}/logo"
         case .personImage: "/api/v1/personen/{id}/bild"
         case .pushToken: "/api/v1/push-token"
         }

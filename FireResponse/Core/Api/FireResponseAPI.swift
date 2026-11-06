@@ -105,6 +105,12 @@ nonisolated struct FireResponseAPI: Sendable {
         await client.perform(.badgeImage, rawPath: path, maxBytes: Self.maxImageBytes)
     }
 
+    /// Logo der Einheit (SVG oder PNG); 404 heisst: die Einheit hat keins. Die Adresse baut die App aus der Kennung, nie aus Serverdaten.
+    func unitLogo(unitId: String) async -> ApiResult<Data> {
+        // Über `rawPath`, damit nur eine UUID als Kennung hinausgeht: `..` bliebe sonst unkodiert im Pfad.
+        await client.perform(.unitLogo, rawPath: Endpoint.unitLogo.path(unitId), maxBytes: Self.maxImageBytes)
+    }
+
     // MARK: Push
 
     /// Der Server verlangt 20 bis 512 Zeichen aus Buchstaben, Ziffern und `_ : . -` und die Plattform `ios`.
