@@ -77,14 +77,14 @@ struct ApiContractTests {
     }
 
     @Test func endpointsCoverEveryOperationOfTheAppContract() throws {
-        // Was Android nutzt und der Vertrag der App kennt; das Logo je Einheit gehört nicht zu V1.
+        // Was Android nutzt und der Vertrag der App kennt.
         let expected: Set<String> = [
             "POST /api/auth/sign-in/username", "POST /api/auth/sign-out", "GET /api/auth/get-session", "POST /api/auth/change-password",
             "GET /api/v1/ich", "PATCH /api/v1/ich", "PUT /api/v1/ich/bild", "DELETE /api/v1/ich/bild",
             "GET /api/v1/einwilligung", "PUT /api/v1/einwilligung", "GET /api/v1/datenschutz", "GET /api/v1/programme",
             "GET /api/v1/programme/{}", "GET /api/v1/programme/{}/teilnahmen", "PUT /api/v1/programme/{}/teilnahmen/{}",
             "PUT /api/v1/programme/{}/leitung", "GET /api/v1/einheiten/{}/kontakt", "GET /api/v1/raenge/{}/abzeichen",
-            "GET /api/v1/personen/{}/bild", "PUT /api/v1/push-token",
+            "GET /api/v1/personen/{}/bild", "GET /api/v1/einheiten/{}/logo", "PUT /api/v1/push-token",
         ]
         #expect(Set(Endpoint.allCases.map { "\($0.method.rawValue) \(normalize($0.template))" }) == expected)
     }

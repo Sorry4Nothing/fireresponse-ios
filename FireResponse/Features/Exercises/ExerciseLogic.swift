@@ -9,6 +9,7 @@ nonisolated protocol ExercisesService: Sendable {
     func setLeadership(programId: String, answer: Answer) async -> ApiResult<Void>
     func personImage(path: String) async -> ApiResult<Data>
     func badgeImage(path: String) async -> ApiResult<Data>
+    func unitLogo(unitId: String) async -> ApiResult<Data>
 }
 
 extension FireResponseAPI: ExercisesService {}
@@ -181,7 +182,7 @@ nonisolated enum ExerciseFormat {
 
     /// Der volle Satz der Karte für VoiceOver.
     static func cardSentence(_ program: Program, today: SwissDay) -> String {
-        var parts: [String?] = [startDay(program).map(longDay), spokenTime(program), program.title]
+        var parts: [String?] = [startDay(program).map(longDay), spokenTime(program), program.title, program.unit.name]
         if program.status == "abgesagt" { parts.append(String(localized: "Abgesagt")) }
         if program.status == "pruefen" { parts.append(String(localized: "Wird noch geprüft")) }
         parts += statusSentences(program).map(\.text)
