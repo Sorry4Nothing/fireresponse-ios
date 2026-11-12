@@ -64,17 +64,17 @@ struct ExerciseListView: View {
                 ScrollView { StateView(.empty, primary: { Task { await model.load() } }) }
             case .loaded(let days):
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: Spacing.s5) {
+                    // Der Abstand zwischen den Tagen liegt in den Zeilen selbst, damit die Linie links nirgends abreisst.
+                    LazyVStack(alignment: .leading, spacing: 0) {
                         if let error = model.refreshError {
                             Notice(.error, title: "Aktualisieren hat nicht geklappt", message: ExerciseMessage.text(for: error))
+                                .padding(.bottom, Spacing.s5)
                         }
-                        ForEach(ExerciseRules.groupByMonth(days)) { section in
-                            VStack(alignment: .leading, spacing: Spacing.s3) {
-                                if let heading = section.heading {
-                                    Text(heading).font(.frMonth).foregroundStyle(Color.frOnSurface)
-                                        .accessibilityAddTraits(.isHeader)
-                                }
-                                ForEach(section.days) { DayRow(day: $0, today: model.today, images: images) }
+                        let sections = ExerciseRules.groupByMonth(days)
+                        ForEach(sections) { section in
+                            if let heading = section.heading { MonthHeading(text: heading) }
+                            ForEach(section.days) { day in
+                                DayRow(day: day, today: model.today, images: images, isLast: day.id == sections.last?.days.last?.id)
                             }
                         }
                     }
@@ -105,10 +105,29 @@ extension ApiError {
 }
 
 /// Ein Tag der Zeitleiste: links das Datum an einer Linie, rechts die Karten. Ab AX1 steht das Datum über den Karten.
+/// Monats-Überschrift der Zeitleiste; die Linie links läuft an ihr vorbei.
+private struct MonthHeading: View {
+    let text: String
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    var body: some View {
+        HStack(alignment: .top, spacing: Spacing.s2) {
+            if !typeSize.isAccessibilitySize {
+                Capsule().fill(Color.frOutlineVariant).frame(width: 2).frame(width: 48).frame(maxHeight: .infinity).accessibilityHidden(true)
+            }
+            Text(text).font(.frMonth).foregroundStyle(Color.frOnSurface).accessibilityAddTraits(.isHeader)
+                .padding(.bottom, Spacing.s3)
+            Spacer(minLength: 0)
+        }
+    }
+}
+
 private struct DayRow: View {
     let day: ProgramDay
     let today: SwissDay
     let images: RemoteImages
+    /// Das letzte Datum beendet die Linie; sonst reicht sie bis zum nächsten.
+    let isLast: Bool
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
@@ -120,6 +139,7 @@ private struct DayRow: View {
                 }
                 cards
             }
+            .padding(.bottom, isLast ? 0 : Spacing.s5)
         } else {
             HStack(alignment: .top, spacing: Spacing.s2) {
                 if let date = day.day {
@@ -133,7 +153,7 @@ private struct DayRow: View {
                 } else {
                     Color.clear.frame(width: 48, height: 1)
                 }
-                cards
+                cards.padding(.bottom, isLast ? 0 : Spacing.s5)
             }
         }
     }
