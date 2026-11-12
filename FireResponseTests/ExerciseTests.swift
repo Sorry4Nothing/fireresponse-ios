@@ -190,7 +190,8 @@ struct ExerciseTests {
 /// Zeit in der Detailansicht (Issue #35).
 extension ExerciseTests {
     private func decoded(_ fields: String) throws -> Program {
-        let json = #"{"id":"p","titel":"T","status":"aktiv",\#(fields),"art":null,"anmeldbar":true,"anmeldungAb":"2027-01-01","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF","typ":"jf"},"teilnehmende":[]}"#
+        let json = #"{"id":"p","titel":"T","status":"aktiv",\#(fields),"# +
+            #""art":null,"anmeldbar":true,"anmeldungAb":"2027-01-01","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF","typ":"jf"},"teilnehmende":[]}"#
         return try JSONDecoder.api.decode(Program.self, from: Data(json.utf8))
     }
 
