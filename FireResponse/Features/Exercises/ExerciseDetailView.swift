@@ -46,6 +46,7 @@ struct ExerciseDetailView: View {
             if let time = model.lastSentTime { AccessibilityNotification.Announcement(String(localized: "Gesendet \(time)")).post() }
         }
         .sensoryFeedback(.success, trigger: model.sentCount)
+        .sensoryFeedback(.error, trigger: model.failedCount)
     }
 
     private func content(_ program: Program) -> some View {
@@ -57,7 +58,7 @@ struct ExerciseDetailView: View {
                 if program.status == "pruefen" { StatusChip(.review) }
                 FactsCard(program: program)
                 if let contact = program.contact { ContactCard(contact: contact, images: images) }
-                AnswerSection(program: program, model: model, profile: profile, today: today)
+                AnswerSection(program: program, model: model, profile: profile, today: today, images: images)
                 if ExerciseRules.canSeeRegistrations(program, profile: profile) {
                     NavigationLink(value: RegistrationsRoute(programId: program.id, subtitle: "\(program.title) · \(subtitle(program) ?? "")")) {
                         HStack {
@@ -172,6 +173,7 @@ private struct AnswerSection: View {
     let model: ExerciseDetailModel
     let profile: Profile?
     let today: SwissDay
+    let images: RemoteImages
     @State private var slow = false
 
     private var open: Bool { ExerciseRules.window(program, today: today) == .open }
@@ -192,7 +194,8 @@ private struct AnswerSection: View {
                 }
                 if let own = program.ownRegistration {
                     let name = profile?.name ?? String(localized: "Du")
-                    row(name: name, target: .leadership, server: own == "offen" ? nil : own, initials: ExerciseRules.initials(name))
+                    row(name: name, target: .leadership, server: own == "offen" ? nil : own, initials: ExerciseRules.initials(name),
+                        imageData: profile?.imagePath.flatMap { images.data[$0] })
                 }
                 if model.saving != nil, slow {
                     Notice(.info, title: "Das dauert länger als sonst.", message: "Bitte noch einen Moment warten.")
@@ -201,6 +204,7 @@ private struct AnswerSection: View {
                     Notice(.error, title: "Antwort nicht gesendet", message: ExerciseMessage.text(for: error))
                 }
             }
+            .task(id: profile?.imagePath) { await images.loadPerson(profile?.imagePath) }
             .task(id: model.saving) {
                 slow = false
                 guard model.saving != nil else { return }
@@ -219,11 +223,11 @@ private struct AnswerSection: View {
     }
 
     @ViewBuilder
-    private func row(name: String, target: AnswerTarget, server: String?, initials: String) -> some View {
+    private func row(name: String, target: AnswerTarget, server: String?, initials: String, imageData: Data? = nil) -> some View {
         let status = model.status(of: target, server: server)
         if open {
             ResponseControl(
-                name: name, initials: initials,
+                name: name, initials: initials, imageData: imageData,
                 selection: status == "ja" ? .yes : status == "nein" ? .no : nil,
                 detail: detail(for: target)
             ) { answer in
@@ -232,7 +236,7 @@ private struct AnswerSection: View {
             .allowsHitTesting(model.saving == nil)
         } else {
             HStack(spacing: Spacing.s3) {
-                Avatar(initials: initials, style: .calm)
+                Avatar(initials: initials, style: .calm, imageData: imageData)
                 Text(name).font(.body.weight(.semibold)).foregroundStyle(Color.frOnSurface)
                 Spacer(minLength: Spacing.s2)
                 StatusChip(status == "ja" ? .yes : status == "nein" ? .no : .open)
