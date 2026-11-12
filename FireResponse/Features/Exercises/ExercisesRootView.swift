@@ -68,7 +68,15 @@ struct ExerciseListView: View {
                         if let error = model.refreshError {
                             Notice(.error, title: "Aktualisieren hat nicht geklappt", message: ExerciseMessage.text(for: error))
                         }
-                        ForEach(days) { DayRow(day: $0, today: model.today, images: images) }
+                        ForEach(ExerciseRules.groupByMonth(days)) { section in
+                            VStack(alignment: .leading, spacing: Spacing.s3) {
+                                if let heading = section.heading {
+                                    Text(heading).font(.frMonth).foregroundStyle(Color.frOnSurface)
+                                        .accessibilityAddTraits(.isHeader)
+                                }
+                                ForEach(section.days) { DayRow(day: $0, today: model.today, images: images) }
+                            }
+                        }
                     }
                     .padding(.horizontal, Spacing.s4)
                     .padding(.bottom, Spacing.s4)

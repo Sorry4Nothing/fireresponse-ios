@@ -25,6 +25,14 @@ nonisolated struct ProgramDay: Equatable, Identifiable {
     var id: String { programs.first?.id ?? "leer" }
 }
 
+/// Ein Monat der Zeitleiste; `heading` fehlt bei Tagen ohne lesbare Zeit.
+nonisolated struct MonthSection: Equatable, Identifiable {
+    let key: Int?
+    let heading: String?
+    var days: [ProgramDay]
+    var id: String { key.map(String.init) ?? "ohne-zeit-\(days.first?.id ?? "")" }
+}
+
 /// Wann sich antworten lässt (aus `isAttendanceOpen`, `isRegistrable` und `registrationFrom` der API; die App rechnet das Fenster nicht selbst).
 nonisolated enum RegistrationWindow: Equatable {
     case open
@@ -50,6 +58,27 @@ nonisolated enum ExerciseRules {
             }
         }
         return days
+    }
+
+    /// Monate in der Reihenfolge des Servers. Ein Wechsel von Jahr oder Monat beginnt einen neuen Abschnitt; die Überschrift nennt das Jahr nur,
+    /// wenn die vorige Überschrift in einem anderen Jahr lag (die erste nie). Tage ohne lesbare Zeit bilden einen Abschnitt ohne Überschrift.
+    static func groupByMonth(_ days: [ProgramDay]) -> [MonthSection] {
+        var sections: [MonthSection] = []
+        var lastHeadingYear: Int?
+        for day in days {
+            let key = day.day.map { $0.year * 100 + $0.month }
+            if let last = sections.last, last.key == key {
+                sections[sections.count - 1].days.append(day)
+                continue
+            }
+            var heading: String?
+            if let first = day.day {
+                heading = ExerciseFormat.monthHeading(first, withYear: lastHeadingYear.map { $0 != first.year } ?? false)
+                lastHeadingYear = first.year
+            }
+            sections.append(MonthSection(key: key, heading: heading, days: [day]))
+        }
+        return sections
     }
 
     static func window(_ program: Program, today: SwissDay) -> RegistrationWindow {
@@ -117,6 +146,11 @@ nonisolated enum ExerciseFormat {
     /// «14. November»
     static func dayAndMonth(_ day: SwissDay) -> String {
         date(day).formatted(style(.dateTime.day().month(.wide)))
+    }
+
+    /// «November», mit Jahr «Januar 2027»
+    static func monthHeading(_ day: SwissDay, withYear: Bool) -> String {
+        date(day).formatted(style(withYear ? .dateTime.month(.wide).year() : .dateTime.month(.wide)))
     }
 
     /// «14.11.»

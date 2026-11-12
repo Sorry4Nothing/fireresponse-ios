@@ -143,6 +143,24 @@ struct ExerciseTests {
         #expect(days.first?.day?.description == "2027-03-07")
     }
 
+    @Test func monthHeadingsNameTheYearOnlyAtTheYearChange() throws {
+        func program(_ id: String, _ iso: String) throws -> Program { try makeProgram(id: id, start: iso, end: iso) }
+        let days = ExerciseRules.groupByDay([
+            try program("a", "2026-11-14T10:00:00.000Z"), try program("b", "2026-11-20T10:00:00.000Z"),
+            try program("c", "2026-12-05T10:00:00.000Z"), try program("d", "2027-01-09T10:00:00.000Z"),
+            try program("e", "2027-02-06T10:00:00.000Z"),
+        ])
+        let sections = ExerciseRules.groupByMonth(days)
+        #expect(sections.map(\.heading) == ["November", "Dezember", "Januar 2027", "Februar"])
+        #expect(sections.map(\.days.count) == [2, 1, 1, 1])
+    }
+
+    @Test func daysWithoutTimeFormAnUntitledSection() throws {
+        let timeless = ProgramDay(day: nil, programs: [try makeProgram(id: "x")])
+        let sections = ExerciseRules.groupByMonth([timeless])
+        #expect(sections.count == 1 && sections[0].heading == nil)
+    }
+
     @Test func formatsInDeCH() throws {
         let program = try makeProgram()
         let day = try #require(SwissDay("2027-03-06"))
