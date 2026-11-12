@@ -68,7 +68,8 @@ nonisolated func makeProgram(
 @MainActor
 struct ExerciseTests {
     @Test func oldServerAnmeldbarFalseDoesNotChangeTheWindow() throws {
-        let json = #"{"id":"p","titel":"T","status":"aktiv","ganztaegig":false,"beginn":"2027-03-06T13:00:00.000Z","ende":"2027-03-06T16:00:00.000Z","art":null,"anmeldbar":false,"anmeldungAb":"2027-02-10","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF","typ":"jf"},"teilnehmende":[]}"#
+        let json = #"{"id":"p","titel":"T","status":"aktiv","ganztaegig":false,"beginn":"2027-03-06T13:00:00.000Z","ende":"2027-03-06T16:00:00.000Z","# +
+            #""art":null,"anmeldbar":false,"anmeldungAb":"2027-02-10","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF","typ":"jf"},"teilnehmende":[]}"#
         let program = try JSONDecoder.api.decode(Program.self, from: Data(json.utf8))
         #expect(ExerciseRules.window(program, today: try #require(SwissDay("2027-02-01"))) == .opensOn(try #require(SwissDay("2027-02-10"))))
     }
