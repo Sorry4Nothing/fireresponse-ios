@@ -116,6 +116,8 @@ final class ExerciseDetailModel {
     private(set) var error: ApiError?
     /// Zählt erfolgreiche Antworten (löst Haptik und Ansage aus).
     private(set) var sentCount = 0
+    /// Zählt fehlgeschlagene Antworten (löst die Fehler-Haptik aus).
+    private(set) var failedCount = 0
     private(set) var lastSentTime: String?
 
     private let service: any ExercisesService
@@ -177,6 +179,7 @@ final class ExerciseDetailModel {
             }
         case .failure(let failure, _, _):
             error = failure
+            failedCount += 1
         }
         saving = nil
     }

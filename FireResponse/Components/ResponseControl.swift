@@ -9,15 +9,18 @@ struct ResponseControl: View {
 
     let name: String
     let initials: String
+    /// Eigenes Profilbild (nur bei der eigenen Anmeldung); fehlt es, stehen die Initialen.
+    var imageData: Data?
     let selection: Answer?
     /// Rückmeldung nach dem Senden, z. B. «Gesendet 12:10»; ohne Antwort steht «Noch offen».
     var detail: String?
     let onSelect: (Answer) -> Void
     @Environment(\.dynamicTypeSize) private var typeSize
 
-    init(name: String, initials: String, selection: Answer?, detail: String? = nil, onSelect: @escaping (Answer) -> Void) {
+    init(name: String, initials: String, imageData: Data? = nil, selection: Answer?, detail: String? = nil, onSelect: @escaping (Answer) -> Void) {
         self.name = name
         self.initials = initials
+        self.imageData = imageData
         self.selection = selection
         self.detail = detail
         self.onSelect = onSelect
@@ -28,7 +31,7 @@ struct ResponseControl: View {
             : AnyLayout(HStackLayout(spacing: Spacing.s3))
         layout {
             HStack(spacing: Spacing.s3) {
-                Avatar(initials: initials, style: .calm)
+                Avatar(initials: initials, style: .calm, imageData: imageData)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name).font(.body.weight(.semibold)).foregroundStyle(Color.frOnSurface)
                     if selection == nil {

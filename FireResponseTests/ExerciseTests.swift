@@ -118,6 +118,7 @@ struct ExerciseTests {
             fake.state.withLock { $0.leadershipResult = .failure(expected) }
             await model.answer(.no, for: .leadership)
             #expect(model.error == expected && model.saving == nil)
+            #expect(model.failedCount > 0)
             #expect(String(localized: ExerciseMessage.text(for: expected)).isEmpty == false)
         }
         #expect(model.status(of: .participant("t1"), server: "ja") == "ja")
