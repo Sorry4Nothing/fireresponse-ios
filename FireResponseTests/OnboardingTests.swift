@@ -124,6 +124,31 @@ struct OnboardingTests {
         #expect(model.consent?.text == "Text")
     }
 
+    /// Neue Fassung der Einwilligung mitten in der Sitzung: Der Server antwortet mit 403, die App zeigt den Text erneut.
+    @Test func newConsentVersionMidSessionShowsTheConsentAgain() async throws {
+        let base: [String: StubReply] = [
+            "/api/auth/get-session": StubReply(200, json: sessionJSON()),
+            "/api/v1/ich": StubReply(200, json: profileJSON(consented: true)),
+        ]
+        let (model, _) = makeModel(base)
+        // `run()` hört auf die Ereignisse des Clients, `start()` allein nicht.
+        let runner = Task { await model.run() }
+        defer { runner.cancel() }
+        for _ in 0..<100 where model.phase != .ready { try await Task.sleep(for: .milliseconds(20)) }
+        #expect(model.phase == .ready)
+
+        FlowStub.install(router(base.merging([
+            "/api/v1/ich": StubReply(200, json: profileJSON(consented: false)),
+            "/api/v1/einwilligung": StubReply(200, json: consentJSON(valid: false)),
+            "/api/v1/programme": StubReply(403, json: #"{"code":"EINWILLIGUNG_FEHLT"}"#),
+        ]) { $1 }))
+        let day = try #require(SwissDay("2027-03-01"))
+        _ = await model.api.programs(from: day, to: day)
+        for _ in 0..<100 where model.phase != .welcome { try await Task.sleep(for: .milliseconds(20)) }
+        #expect(model.phase == .welcome)
+        #expect(model.consent?.text == "Text")
+    }
+
     @Test func consentAlreadyValidElsewhereGoesToReady() async {
         let (model, _) = makeModel([
             "/api/auth/get-session": StubReply(200, json: sessionJSON()),
