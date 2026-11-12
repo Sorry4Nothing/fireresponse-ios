@@ -317,7 +317,6 @@ nonisolated struct Program: Decodable, Sendable, Equatable, Identifiable {
     let dayFrom: SwissDay?
     let dayTo: SwissDay?
     let kind: String?
-    let isRegistrable: Bool
     let registrationFrom: SwissDay
     let isAttendanceOpen: Bool
     let unit: ProgramUnit
@@ -338,7 +337,6 @@ nonisolated struct Program: Decodable, Sendable, Equatable, Identifiable {
         case dayFrom = "tagVon"
         case dayTo = "tagBis"
         case kind = "art"
-        case isRegistrable = "anmeldbar"
         case registrationFrom = "anmeldungAb"
         case isAttendanceOpen = "teilnahmeOffen"
         case unit = "einheit"

@@ -50,7 +50,7 @@ extension WidgetSnapshot {
             if case .opensOn(let opens) = ExerciseRules.window(program, today: today) {
                 count = String(localized: "ab \(ExerciseFormat.numeric(opens))")
                 opensText = ExerciseFormat.opensOnText(opens)
-            } else if program.isRegistrable {
+            } else {
                 people = program.participants.map { Person(name: $0.firstName, stand: WidgetRules.stand($0.status)) }
                     + (program.ownRegistration.map { [Person(name: String(localized: "Du"), stand: WidgetRules.stand($0))] } ?? [])
                 if !people.isEmpty {

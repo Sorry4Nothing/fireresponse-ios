@@ -11,8 +11,6 @@ nonisolated enum ApiError: Error, Sendable, Equatable {
     case registrationClosed
     /// 409 `ANMELDEFENSTER_NICHT_OFFEN`: Die Anmeldung öffnet erst später.
     case registrationNotOpen
-    /// 409 `KEINE_ANMELDUNG`: Die Einheit hat die Art des Termins nicht für die Anmeldung freigegeben.
-    case noRegistration
     /// 409 `PROGRAMM_BEGONNEN`: Die Leitung kann sich nach dem Beginn nicht mehr ändern.
     case appointmentStarted
     case network
@@ -28,7 +26,6 @@ nonisolated enum ApiError: Error, Sendable, Equatable {
             switch code {
             case "PROGRAMM_BEGONNEN": .appointmentStarted
             case "ANMELDEFENSTER_NICHT_OFFEN": .registrationNotOpen
-            case "KEINE_ANMELDUNG": .noRegistration
             default: .registrationClosed
             }
         case 426: .appOutdated

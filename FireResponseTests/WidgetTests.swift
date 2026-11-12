@@ -37,13 +37,6 @@ struct WidgetTests {
         #expect(row.people.isEmpty)
     }
 
-    @Test func withoutRegistrationThereIsNoCountAndNoPeople() throws {
-        let program = try makeProgram(start: "2027-03-06T13:00:00.000Z", end: "2027-03-06T16:00:00.000Z", registrable: false)
-        let row = try #require(WidgetSnapshot.make(from: [program], now: now).rows.first)
-        #expect(row.count == nil)
-        #expect(row.people.isEmpty)
-    }
-
     @Test func storeRoundTripsAndClears() throws {
         let url = FileManager.default.temporaryDirectory.appending(path: "widget-\(UUID().uuidString).json")
         let store = WidgetSnapshotStore(url: url)

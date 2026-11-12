@@ -88,7 +88,7 @@ struct ApiClientTests {
 
     @Test(arguments: [
         ("PROGRAMM_BEGONNEN", ApiError.appointmentStarted), ("ANMELDEFENSTER_NICHT_OFFEN", .registrationNotOpen),
-        ("KEINE_ANMELDUNG", .noRegistration), ("PROGRAMM_GESCHLOSSEN", .registrationClosed), ("UNBEKANNT", .registrationClosed),
+        ("PROGRAMM_GESCHLOSSEN", .registrationClosed), ("UNBEKANNT", .registrationClosed),
     ])
     func mapsConflictCodes(code: String, expected: ApiError) async {
         let (_, api, _) = makeClient { _ in StubReply(409, json: #"{"code":"\#(code)","message":"Text"}"#) }

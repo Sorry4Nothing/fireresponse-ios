@@ -25,7 +25,7 @@ nonisolated struct ProgramDay: Equatable, Identifiable {
     var id: String { programs.first?.id ?? "leer" }
 }
 
-/// Wann sich antworten lässt (aus `isAttendanceOpen`, `isRegistrable` und `registrationFrom` der API; die App rechnet das Fenster nicht selbst).
+/// Wann sich antworten lässt (aus `isAttendanceOpen` und `registrationFrom` der API; `anmeldbar` gilt nicht mehr; die App rechnet das Fenster nicht selbst).
 nonisolated enum RegistrationWindow: Equatable {
     case open
     case opensOn(SwissDay)
@@ -83,13 +83,13 @@ nonisolated enum ExerciseRules {
 
     static func window(_ program: Program, today: SwissDay) -> RegistrationWindow {
         if program.isAttendanceOpen { return .open }
-        if program.isRegistrable, program.status == "aktiv", program.registrationFrom > today { return .opensOn(program.registrationFrom) }
+        if program.status == "aktiv", program.registrationFrom > today { return .opensOn(program.registrationFrom) }
         return .closed
     }
 
     /// Kommando, Leitende und das Konto des Kantonsadmins sehen die Anmeldungen der Einheit (nur lesend). Entscheiden tut der Server (403).
     static func canSeeRegistrations(_ program: Program, profile: Profile?) -> Bool {
-        guard let profile, program.isRegistrable else { return false }
+        guard let profile else { return false }
         return profile.isCantonAdmin || profile.units.contains { $0.id == program.unit.id }
     }
 
@@ -244,7 +244,6 @@ nonisolated enum ExerciseMessage {
         case .tooManyRequests: "Zu viele Anfragen. Bitte warte einen Moment und versuche es dann nochmals."
         case .registrationClosed: "Die Anmeldung ist geschlossen. Die Übung ist abgesagt oder hat schon begonnen."
         case .registrationNotOpen: "Die Anmeldung ist noch nicht offen."
-        case .noRegistration: "Für diese Übung gibt es keine Anmeldung."
         case .appointmentStarted: "Die Übung hat schon begonnen. Die Anmeldung lässt sich nicht mehr ändern."
         case .network: "Keine Verbindung. Prüfe dein Internet und versuche es nochmals."
         case .unknown: "Etwas ist schiefgelaufen. Bitte versuche es nochmals."
