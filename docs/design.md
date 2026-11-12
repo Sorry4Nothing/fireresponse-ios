@@ -51,11 +51,16 @@ Noch nicht als Baustein umgesetzt: Alert, Sheet, Umschalter, TabBar und Navigati
 Ordner `FireResponse/Features/Exercises/`: `ExerciseLogic` (Regeln und Formate, rein), `ExerciseModels` (Laden, Antworten, Polling), Ansichten für Liste, Detail und Anmeldungen.
 
 - **Liste:** eine Abfrage für alle eigenen Einheiten (heute bis sechs Monate, die App schickt nie eine Einheit mit), gruppiert nach Schweizer Kalendertag, ab AX1 Datum über den Karten. Kein Rang auf der Karte. `.refreshable`.
-- **Anmeldefenster:** Knöpfe nur bei `teilnahmeOffen`; sonst «Anmeldung ab <Datum>» (`anmeldungAb`, nur wenn `anmeldbar` und aktiv), sonst «Die Anmeldung ist geschlossen» mit dem Stand als Chip. Die App rechnet das Fenster nie selbst.
+- **Anmeldefenster:** Knöpfe nur bei `teilnahmeOffen`; sonst «Anmeldung ab <Datum>» (`anmeldungAb`, nur wenn aktiv), sonst «Die Anmeldung ist geschlossen» mit dem Stand als Chip. Die App rechnet das Fenster nie selbst. `anmeldbar` steuert nichts mehr (API #194: immer `true`); «Termine ohne Anmeldung» und `KEINE_ANMELDUNG` entfallen. Termine «nur Leitende» fehlen für Eltern in Liste und Detail; ein 404 auf ein Detail zeigt «Nicht gefunden».
 - **Antworten:** Ja/Nein je teilnehmende Person (`ResponseControl`) und für Leitende selbst (`setLeadership`). Eine Antwort läuft immer allein (Ladesperre), nach Erfolg wird das Programm neu gelesen (Kontaktperson kann wechseln). Nach 4 s erscheint ein Hinweis «Das dauert länger als sonst».
 - **Polling:** Detail liest alle 30 s still nach, nur sichtbar und bei aktiver App; während einer Antwort ruht es, ein Fehler lässt den alten Stand stehen.
 - **Anmeldungen:** nur lesend, für Leitung der Einheit und Kantonsadmin; sortiert offen, Ja, Nein; Rangabzeichen 24 pt.
 - **Kalender:** `EKEventEditViewController` (Systemdialog ausserhalb der App, keine Rechteabfrage, kein Lesen von Kalenderdaten).
+
+- **Monats-Überschriften (Issue #34, wie Android #128):** die Liste gruppiert nach Monat, Reihenfolge wie vom Server. Überschrift «November», «Dezember», das Jahr nur beim Jahreswechsel («Januar 2027»), die erste ohne Jahr; Tage ohne lesbare Zeit bilden einen Abschnitt ohne Überschrift. Barlow 19, Header für VoiceOver. Code `ExerciseRules.groupByMonth`.
+- **Zeit gross im Detail (Issue #35, wie Android #130):** unter dem Titel zwei Zeilen mit Uhr-Symbol: Uhrzeit, darunter das Datum ausgeschrieben, neutral gefärbt (nur das Symbol trägt den Akzent). Mehrtägig «… bis …», ganztägig «Ganztägig» mit Datum. Das Jahr nur, wenn es nicht das laufende ist, bei einem Jahreswechsel bei beiden Daten. Das Datum im Kopf und die Zeile «Zeit» in der Karte entfallen. VoiceOver: ein Satz. Code `ExerciseFormat.timeDisplay`.
+- **Logo der Einheit (Issue #23, wie Android #16 und #104):** oben rechts auf jeder Karte (40 pt, wächst mit der Schrift) und im Profil je Einheit (32 pt); ohne Logo «JF» oder «KF» im Kreis. `GET /api/v1/einheiten/{id}/logo`, nur mit UUID, 404 heisst ohne Logo. Auf der Karte steht der Name der Einheit im VoiceOver-Satz, im Profil Name und Bezirk. Entscheid des Auftraggebers; das Design System kennt kein Logo je Einheit. `UIImage` liest kein SVG: dann bleibt das Kürzel. Code `Components/UnitMark.swift`.
+- **Antwortzeile (Issue #36, wie Android #86 und #109):** die eigene Anmeldung als Leitung zeigt das Profilbild; Erfolg gibt eine Erfolgs-Haptik, ein Fehler eine Fehler-Haptik. Scrollposition: bleibt, weil die Liste still nachlädt.
 
 Abweichungen und Lücken:
 
@@ -74,11 +79,13 @@ Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageRes
 - **Kamera:** «Foto aufnehmen» fehlt, es gibt nur «Foto auswählen» (`PhotosPicker`, braucht keine Berechtigung).
 - **Benachrichtigungen:** Zeile führt zu `PushSettingsView` statt «Kommt bald».
 - **Mehrere Einheiten:** eine Info-Zeile «Einheit · Bezirk …» je Einheit. Eltern sehen keine Einheitszeile, weil das Profil nur Einheiten mit Rolle nennt.
-- **Konto aufs Kind übertragen:** Zeile nur für Eltern (das Design kennt im Profil keine Hilfe).
 - **Gesperrt:** Zustand ohne Vorlage im Design; Aufbau wie `StateView` (Symbol, Titel, Satz, «Entsperren», Textknopf).
 - **Datenschutz:** «Stand» zeigt die Fassung (die API liefert kein Datum).
 
 
+
+- **Profilbild zuschneiden (Issue #22, wie Android #98):** ohne Vorlage, Wunsch des Auftraggebers. Nach der Auswahl öffnet sich `CropImageView`: Quadrat mit Kreis als Hilfslinie, Verschieben per Geste, Zoom 1- bis 4-fach per Regler oder Zwei-Finger-Geste. VoiceOver-Aktionen «Ausschnitt nach links/rechts/oben/unten». «Übernehmen» lädt JPEG mit 512 px, gedreht, ohne EXIF; «Abbrechen» lädt nichts hoch. Rechnung `ProfileImageCrop`, Encoder `ProfileImageResizer`.
+- **Konto aufs Kind übertragen:** Auftrag und Entscheid #24 widersprechen sich (Auftrag verlangt die Seite, #24 streicht sie, Übertragen nur im Admin-Panel). `Features/Info/TransferInfoView` ist ein leerer Platzhalter ohne Verweis, Issue #16 bleibt offen. Nichts gebaut, bis der Auftraggeber entscheidet; die Zeile «Konto aufs Kind übertragen» im Profil gibt es darum nicht.
 
 ## Erster Start (Login, Passwort, Willkommen)
 
