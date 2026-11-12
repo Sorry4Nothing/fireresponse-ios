@@ -138,9 +138,9 @@ nonisolated enum ExerciseFormat {
         date(day).formatted(style(.dateTime.weekday(.abbreviated))).replacingOccurrences(of: ".", with: "").uppercased(with: locale)
     }
 
-    /// «Samstag, 14. November»
-    static func longDay(_ day: SwissDay) -> String {
-        date(day).formatted(style(.dateTime.weekday(.wide).day().month(.wide)))
+    /// «Samstag, 14. November», mit Jahr «Samstag, 14. November 2027»
+    static func longDay(_ day: SwissDay, withYear: Bool = false) -> String {
+        date(day).formatted(style(withYear ? .dateTime.weekday(.wide).day().month(.wide).year() : .dateTime.weekday(.wide).day().month(.wide)))
     }
 
     /// «14. November»
@@ -186,12 +186,45 @@ nonisolated enum ExerciseFormat {
         return String(localized: "\(part(start)) bis \(part(end)) Uhr")
     }
 
-    /// Für die Detailansicht: bei Terminen über mehrere Tage mit Ende.
-    static func detailedTimeText(_ program: Program) -> String {
-        guard !program.isAllDay, let start = program.start, let end = program.end, SwissDay(date: start) != SwissDay(date: end) else {
-            return timeText(program)
+    /// Die Zeit für die Detailansicht in zwei Zeilen: oben die Uhrzeit, darunter das Datum ausgeschrieben (Schweizer Zeit).
+    /// Das Jahr steht nur, wenn es nicht das laufende ist; geht die Übung über einen Jahreswechsel, steht es bei beiden Daten.
+    /// `nil`, wenn der Server keine lesbare Zeit liefert.
+    struct TimeDisplay: Equatable {
+        let time: String
+        let date: String
+        /// Ein Satz für VoiceOver.
+        let spoken: String
+    }
+
+    static func timeDisplay(_ program: Program, today: SwissDay = SwissDay(date: .now)) -> TimeDisplay? {
+        func day(_ value: SwissDay, _ sameYearSpan: Bool = false) -> String { longDay(value, withYear: value.year != today.year || sameYearSpan) }
+        if program.isAllDay {
+            guard let from = program.dayFrom, let until = program.dayTo else { return nil }
+            let label = String(localized: "Ganztägig")
+            if from == until {
+                let text = day(from)
+                return TimeDisplay(time: label, date: text, spoken: String(localized: "Zeit: \(label), \(text)"))
+            }
+            let span = from.year != until.year
+            let text = String(localized: "\(day(from, span)) bis \(day(until, span))")
+            return TimeDisplay(time: label, date: text, spoken: String(localized: "Zeit: \(label), von \(day(from, span)) bis \(day(until, span))"))
         }
-        return String(localized: "\(time(start)) bis \(shortDay(SwissDay(date: end))), \(time(end))")
+        guard let start = program.start, let end = program.end else { return nil }
+        let first = SwissDay(date: start)
+        let last = SwissDay(date: end)
+        if first == last {
+            let text = day(first)
+            return TimeDisplay(
+                time: "\(time(start))–\(time(end))", date: text,
+                spoken: String(localized: "Zeit: \(text), \(time(start)) bis \(time(end)) Uhr")
+            )
+        }
+        let span = first.year != last.year
+        return TimeDisplay(
+            time: "\(time(start)) – \(time(end))",
+            date: String(localized: "\(day(first, span)) bis \(day(last, span))"),
+            spoken: String(localized: "Zeit: \(day(first, span)), \(time(start)) bis \(day(last, span)), \(time(end)) Uhr")
+        )
     }
 
     /// Der Stand je Person als Satz («Noah kommt», «Zusage für Lena offen»), danach der eigene als Leitung.
@@ -216,7 +249,7 @@ nonisolated enum ExerciseFormat {
 
     /// Der volle Satz der Karte für VoiceOver.
     static func cardSentence(_ program: Program, today: SwissDay) -> String {
-        var parts: [String?] = [startDay(program).map(longDay), spokenTime(program), program.title, program.unit.name]
+        var parts: [String?] = [startDay(program).map { longDay($0) }, spokenTime(program), program.title, program.unit.name]
         if program.status == "abgesagt" { parts.append(String(localized: "Abgesagt")) }
         if program.status == "pruefen" { parts.append(String(localized: "Wird noch geprüft")) }
         parts += statusSentences(program).map(\.text)

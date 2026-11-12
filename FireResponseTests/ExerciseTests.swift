@@ -211,3 +211,41 @@ struct ExerciseTests {
         #expect(fake.state.withLock { $0.setCalls }.isEmpty)
     }
 }
+
+/// Zeit in der Detailansicht (Issue #35).
+extension ExerciseTests {
+    private func decoded(_ fields: String) throws -> Program {
+        let json = #"{"id":"p","titel":"T","status":"aktiv",\#(fields),"# +
+            #""art":null,"anmeldbar":true,"anmeldungAb":"2027-01-01","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF","typ":"jf"},"teilnehmende":[]}"#
+        return try JSONDecoder.api.decode(Program.self, from: Data(json.utf8))
+    }
+
+    @Test func timeDisplayForOneDayMultipleDaysAndAllDay() throws {
+        let today = try #require(SwissDay("2027-03-01"))
+        let one = try #require(ExerciseFormat.timeDisplay(try makeProgram(), today: today))
+        #expect(one.time == "14:00–17:00" && one.date == "Samstag, 6. März")
+        #expect(one.spoken == "Zeit: Samstag, 6. März, 14:00 bis 17:00 Uhr")
+
+        let night = try decoded(#""ganztaegig":false,"beginn":"2027-03-06T21:00:00.000Z","ende":"2027-03-07T01:00:00.000Z""#)
+        let multi = try #require(ExerciseFormat.timeDisplay(night, today: today))
+        #expect(multi.time == "22:00 – 02:00" && multi.date == "Samstag, 6. März bis Sonntag, 7. März")
+
+        let allDay = try decoded(#""ganztaegig":true,"tagVon":"2027-03-06","tagBis":"2027-03-07""#)
+        let all = try #require(ExerciseFormat.timeDisplay(allDay, today: today))
+        #expect(all.time == "Ganztägig" && all.date == "Samstag, 6. März bis Sonntag, 7. März")
+        let single = try decoded(#""ganztaegig":true,"tagVon":"2027-03-06","tagBis":"2027-03-06""#)
+        #expect(ExerciseFormat.timeDisplay(single, today: today)?.date == "Samstag, 6. März")
+    }
+
+    @Test func timeDisplayNamesTheYearOnlyWhenItIsNotThisYear() throws {
+        let next = try #require(SwissDay("2026-12-01"))
+        #expect(ExerciseFormat.timeDisplay(try makeProgram(), today: next)?.date == "Samstag, 6. März 2027")
+        let newYear = try decoded(#""ganztaegig":true,"tagVon":"2026-12-31","tagBis":"2027-01-01""#)
+        #expect(ExerciseFormat.timeDisplay(newYear, today: next)?.date == "Donnerstag, 31. Dezember 2026 bis Freitag, 1. Januar 2027")
+    }
+
+    @Test func timeDisplayIsNilWithoutReadableTime() throws {
+        let program = try decoded(#""ganztaegig":false,"beginn":null,"ende":null"#)
+        #expect(ExerciseFormat.timeDisplay(program) == nil)
+    }
+}
