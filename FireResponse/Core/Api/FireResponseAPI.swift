@@ -101,14 +101,20 @@ nonisolated struct FireResponseAPI: Sendable {
         await client.perform(.personImage, rawPath: path, maxBytes: Self.maxImageBytes)
     }
 
+    /// Ein SVG vom Server kommt als PNG an, denn `UIImage` liest kein SVG (Seitenverhältnis des Abzeichens 100 : 130).
     func badgeImage(path: String) async -> ApiResult<Data> {
-        await client.perform(.badgeImage, rawPath: path, maxBytes: Self.maxImageBytes)
+        await displayable(await client.perform(.badgeImage, rawPath: path, maxBytes: Self.maxImageBytes), size: CGSize(width: 120, height: 156))
     }
 
     /// Logo der Einheit (SVG oder PNG); 404 heisst: die Einheit hat keins. Die Adresse baut die App aus der Kennung, nie aus Serverdaten.
     func unitLogo(unitId: String) async -> ApiResult<Data> {
         // Über `rawPath`, damit nur eine UUID als Kennung hinausgeht: `..` bliebe sonst unkodiert im Pfad.
-        await client.perform(.unitLogo, rawPath: Endpoint.unitLogo.path(unitId), maxBytes: Self.maxImageBytes)
+        await displayable(await client.perform(.unitLogo, rawPath: Endpoint.unitLogo.path(unitId), maxBytes: Self.maxImageBytes), size: CGSize(width: 160, height: 160))
+    }
+
+    private func displayable(_ result: ApiResult<Data>, size: CGSize) async -> ApiResult<Data> {
+        guard case .ok(let data) = result else { return result }
+        return .ok(await SVGRasterizer.displayable(data, size: size))
     }
 
     // MARK: Push
