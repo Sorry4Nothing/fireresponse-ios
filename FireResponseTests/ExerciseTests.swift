@@ -50,14 +50,14 @@ final class FakeExercises: ExercisesService, @unchecked Sendable {
 
 nonisolated func makeProgram(
     id: String = "p1", start: String = "2027-03-06T13:00:00.000Z", end: String = "2027-03-06T16:00:00.000Z", status: String = "aktiv",
-    registrationFrom: String = "2027-01-23", open: Bool = true, registrable: Bool = true, own: String? = nil,
+    registrationFrom: String = "2027-01-23", open: Bool = true, own: String? = nil,
     participantStatus: String? = nil, contactName: String = "Erika Muster"
 ) throws -> Program {
     let ownJSON = own.map { #""eigeneAnmeldung":"\#($0)","# } ?? ""
     let participantJSON = participantStatus.map { #""\#($0)""# } ?? "null"
     let json = """
     {"id":"\(id)","titel":"Schläuche kuppeln","status":"\(status)","ganztaegig":false,"beginn":"\(start)","ende":"\(end)",
-     "art":"Übung","anmeldbar":\(registrable),"anmeldungAb":"\(registrationFrom)","teilnahmeOffen":\(open),
+     "art":"Übung","anmeldbar":true,"anmeldungAb":"\(registrationFrom)","teilnahmeOffen":\(open),
      "einheit":{"id":"e1","name":"JF Beispielstadt","typ":"jf"},\(ownJSON)
      "teilnehmende":[{"id":"t1","vorname":"Anna","status":\(participantJSON),"abzeichen":null}],
      "kontakt":{"id":"k1","name":"\(contactName)","rolle":"kommandant","bildUrl":null,"abzeichen":null}}
@@ -67,6 +67,12 @@ nonisolated func makeProgram(
 
 @MainActor
 struct ExerciseTests {
+    @Test func oldServerAnmeldbarFalseDoesNotChangeTheWindow() throws {
+        let json = #"{"id":"p","titel":"T","status":"aktiv","ganztaegig":false,"beginn":"2027-03-06T13:00:00.000Z","ende":"2027-03-06T16:00:00.000Z","art":null,"anmeldbar":false,"anmeldungAb":"2027-02-10","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF","typ":"jf"},"teilnehmende":[]}"#
+        let program = try JSONDecoder.api.decode(Program.self, from: Data(json.utf8))
+        #expect(ExerciseRules.window(program, today: try #require(SwissDay("2027-02-01"))) == .opensOn(try #require(SwissDay("2027-02-10"))))
+    }
+
     @Test func cardSentenceNamesTheUnit() throws {
         let program = try makeProgram()
         let today = try #require(SwissDay("2027-03-01"))
@@ -80,9 +86,8 @@ struct ExerciseTests {
         #expect(ExerciseRules.window(early, today: today) == .opensOn(SwissDay("2027-02-10") ?? today))
         let open = try makeProgram(registrationFrom: "2027-01-23", open: true)
         #expect(ExerciseRules.window(open, today: today) == .open)
-        // Fenster vorbei (begonnen) oder Art nicht freigegeben: geschlossen, kein «ab»-Datum.
+        // Fenster vorbei (begonnen): geschlossen, kein «ab»-Datum. `anmeldbar` zählt nicht mehr (alter Server: `false`).
         #expect(ExerciseRules.window(try makeProgram(registrationFrom: "2027-01-01", open: false), today: today) == .closed)
-        #expect(ExerciseRules.window(try makeProgram(registrationFrom: "2027-02-10", open: false, registrable: false), today: today) == .closed)
         #expect(ExerciseRules.window(try makeProgram(status: "abgesagt", registrationFrom: "2027-02-10", open: false), today: today) == .closed)
     }
 
@@ -113,7 +118,7 @@ struct ExerciseTests {
         let model = ExerciseDetailModel(id: "p1", service: fake)
         await model.load()
         for (code, expected) in [("PROGRAMM_BEGONNEN", ApiError.appointmentStarted), ("ANMELDEFENSTER_NICHT_OFFEN", .registrationNotOpen),
-                                 ("KEINE_ANMELDUNG", .noRegistration), ("PROGRAMM_GESCHLOSSEN", .registrationClosed)] {
+                                 ("PROGRAMM_GESCHLOSSEN", .registrationClosed)] {
             #expect(ApiError.from(status: 409, code: code) == expected)
             fake.state.withLock { $0.leadershipResult = .failure(expected) }
             await model.answer(.no, for: .leadership)
