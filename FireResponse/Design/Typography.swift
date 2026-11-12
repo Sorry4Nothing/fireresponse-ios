@@ -11,5 +11,6 @@ extension Font {
     static let frTitle1 = barlow(28, weight: "ExtraBold", relativeTo: .title)
     static let frTitle2 = barlow(22, weight: "ExtraBold", relativeTo: .title2)
     static let frDay = barlow(26, weight: "ExtraBold", relativeTo: .title2).monospacedDigit()
+    static let frMonth = barlow(19, weight: "ExtraBold", relativeTo: .title3)
     static let frCardTitle = barlow(17, weight: "Bold", relativeTo: .headline)
 }
