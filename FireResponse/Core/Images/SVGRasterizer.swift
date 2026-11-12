@@ -8,20 +8,40 @@ import WebKit
 enum SVGRasterizer {
     /// Ob die Bytes ein SVG sind (ein PNG beginnt mit «\u{89}PNG»).
     nonisolated static func isSVG(_ data: Data) -> Bool {
-        String(decoding: data.prefix(2048), as: UTF8.self).lowercased().contains("<svg")
+        data.prefix(2048).range(of: Data("<svg".utf8)) != nil
     }
 
     /// PNG in `size` Punkten (mit Bildschirmmass), das SVG eingepasst; `nil`, wenn es sich nicht zeichnen lässt.
     static func png(from svg: Data, size: CGSize) async -> Data? {
         guard isSVG(svg), size.width > 0, size.height > 0 else { return nil }
         let job = Job(size: size)
-        return await job.render(svg)
+        // Zeichnen und Schnappschuss laufen in der Web-Ansicht; hängt eine davon (kein Fenster, Systemlast), gibt nach 5 Sekunden der Ersatz den Ausschlag.
+        return await withCheckedContinuation { (continuation: CheckedContinuation<Data?, Never>) in
+            let race = Race(continuation)
+            Task { race.finish(await job.render(svg)) }
+            Task {
+                try? await Task.sleep(for: .seconds(5))
+                race.finish(nil)
+            }
+        }
     }
 
     /// Das Bild für die Anzeige: ein SVG als PNG, alles andere unverändert; scheitert das Zeichnen, bleibt es beim SVG (dann zeigt die Ansicht den Ersatz).
     static func displayable(_ data: Data, size: CGSize) async -> Data {
         guard isSVG(data) else { return data }
         return await png(from: data, size: size) ?? data
+    }
+}
+
+/// Das erste Ergebnis gilt, jedes weitere fällt weg.
+@MainActor
+private final class Race {
+    private var continuation: CheckedContinuation<Data?, Never>?
+    init(_ continuation: CheckedContinuation<Data?, Never>) { self.continuation = continuation }
+
+    func finish(_ data: Data?) {
+        continuation?.resume(returning: data)
+        continuation = nil
     }
 }
 
