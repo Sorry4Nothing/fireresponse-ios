@@ -1,6 +1,6 @@
 # API-Vertrag
 
-Kopie, Stand 12. November 2026 (API-PR #194).
+Kopie, Stand 12. November 2026 (mit Einheit bei den Teilnehmenden).
 
 `openapi.yaml` und `endpunkte.md` stammen aus `docs/api/` des Backends ([Sorry4Nothing/fireresponse-api](https://github.com/Sorry4Nothing/fireresponse-api)). Die Dateien nicht von Hand ändern: Bei einer neuen Fassung des Backends neu kopieren und das Datum oben anpassen.
 

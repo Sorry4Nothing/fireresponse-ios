@@ -39,12 +39,17 @@ struct ModelsTests {
          "mussPasswortAendern":false,"telefon":null,"bildUrl":"/api/v1/personen/u1/bild?v=2","pushProgramme":true,
          "einheiten":[{"id":"e1","name":"JF Beispielstadt","typ":"jf","bezirk":"Bezirk Beispiel","rolle":"leitung",
                        "logoUrl":null,"abzeichen":{"kuerzel":"Oblt","sterne":null,"bildUrl":"/api/v1/raenge/r1/abzeichen"}}],
-         "teilnehmende":[{"id":"t1","vorname":"Max","nachname":"Beispiel","einheitId":"e1","art":"eltern","abzeichen":null}]}
+         "teilnehmende":[{"id":"t1","vorname":"Max","nachname":"Beispiel","einheitId":"e1","einheitName":"JF Beispielstadt","einheitTyp":"jf","art":"eltern","abzeichen":null}]}
         """)
         #expect(profile.username == "erika.muster" && profile.pushRegistrations == nil && profile.phone == nil)
         #expect(profile.units.first?.badge?.abbreviation == "Oblt")
         #expect(profile.units.first?.badge?.imagePath == "/api/v1/raenge/r1/abzeichen")
         #expect(profile.participants.first?.unitId == "e1" && profile.participants.first?.badge == nil)
+        #expect(profile.participants.first?.unitName == "JF Beispielstadt" && profile.participants.first?.unitType == "jf")
+        // Ein Server vor dieser Fassung nennt Name und Typ der Einheit nicht: die Zeile bleibt schlicht.
+        let old = #"{"id":"t","vorname":"Max","nachname":"B","einheitId":"e1","art":"eltern","abzeichen":null}"#
+        let oldParticipant = try JSONDecoder.api.decode(ProfileParticipant.self, from: Data(old.utf8))
+        #expect(oldParticipant.unitName == nil && oldParticipant.unitType == nil)
     }
 
     @Test func programDetailWithAllDayAndTimed() throws {
