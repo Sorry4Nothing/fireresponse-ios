@@ -52,9 +52,10 @@ struct ExerciseDetailView: View {
         let today = model.today
         return ScrollView {
             VStack(alignment: .leading, spacing: Spacing.s4) {
-                ScreenHeader(LocalizedStringResource("\(program.title)"), subtitle: subtitle(program).map { LocalizedStringResource("\($0)") }, style: .content)
+                ScreenHeader(LocalizedStringResource("\(program.title)"), style: .content)
                 if program.status == "abgesagt" { CancelledChip() }
                 if program.status == "pruefen" { StatusChip(.review) }
+                if let display = ExerciseFormat.timeDisplay(program) { TimeBlock(display: display) }
                 FactsCard(program: program)
                 if let contact = program.contact { ContactCard(contact: contact, images: images) }
                 AnswerSection(program: program, model: model, profile: profile, today: today)
@@ -88,17 +89,35 @@ struct ExerciseDetailView: View {
     }
 
     private func subtitle(_ program: Program) -> String? {
-        ExerciseRules.startDay(program).map(ExerciseFormat.longDay)
+        ExerciseRules.startDay(program).map { ExerciseFormat.longDay($0) }
     }
 }
 
-/// Zeit, Thema, Aufgebot und Info; Felder ohne Inhalt fallen weg.
+/// Die Zeit gross unter dem Titel: Uhrzeit, darunter das ausgeschriebene Datum. Neutral gefärbt (Rot steht für Abgesagt und Warnungen),
+/// nur das Symbol trägt den Akzent. VoiceOver liest einen Satz.
+private struct TimeBlock: View {
+    let display: ExerciseFormat.TimeDisplay
+
+    var body: some View {
+        HStack(alignment: .top, spacing: Spacing.s3) {
+            Image(systemName: "clock").font(.system(size: 24)).foregroundStyle(Color.frAccentText).frame(width: 28).accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: Spacing.s1) {
+                Text(display.time).font(.frTitle2).foregroundStyle(Color.frOnSurface)
+                Text(display.date).font(.body).foregroundStyle(Color.frOnSurfaceVariant)
+            }
+            Spacer(minLength: 0)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(display.spoken)
+    }
+}
+
+/// Thema, Aufgebot und Info; Felder ohne Inhalt fallen weg.
 private struct FactsCard: View {
     let program: Program
 
     var body: some View {
         let rows: [(symbol: String, title: LocalizedStringResource, value: String)] = [
-            ("clock", "Zeit", ExerciseFormat.detailedTimeText(program)),
             ("list.bullet.clipboard", "Thema", program.topic ?? ""),
             ("backpack", "Aufgebot", program.callUp ?? ""),
             ("info.circle", "Info", program.info ?? ""),
