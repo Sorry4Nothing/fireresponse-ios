@@ -153,12 +153,17 @@ nonisolated struct ProfileParticipant: Decodable, Sendable, Equatable, Identifia
     let firstName: String
     let lastName: String
     let unitId: String
+    /// Name und Typ (`jf` oder `kf`) der Einheit; fehlen bei einem Server vor dieser Fassung.
+    let unitName: String?
+    let unitType: String?
     let kind: String
     let badge: Badge?
 
     enum CodingKeys: String, CodingKey {
         case id
         case badge = "abzeichen"
+        case unitName = "einheitName"
+        case unitType = "einheitTyp"
         case firstName = "vorname"
         case lastName = "nachname"
         case unitId = "einheitId"

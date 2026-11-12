@@ -41,7 +41,10 @@ struct ProfileRootView: View {
             if !profile.participants.isEmpty {
                 Section("Kinder") {
                     ForEach(profile.participants) { child in
-                        ChildRow(child: child, badge: child.badge?.imagePath.flatMap { badges[$0] })
+                        ChildRow(
+                            child: child, badge: child.badge?.imagePath.flatMap { badges[$0] },
+                            logo: logos[child.unitId], logoSettled: settledLogos.contains(child.unitId)
+                        )
                     }
                 }
                 .listRowBackground(Color.frSurfaceContainerLow)
@@ -93,7 +96,7 @@ struct ProfileRootView: View {
             }
         }
         .task(id: profile.participants.compactMap(\.badge?.imagePath)) { await loadBadges(profile) }
-        .task(id: profile.units.map(\.id)) { await loadLogos(profile) }
+        .task(id: profile.units.map(\.id) + profile.participants.map(\.unitId)) { await loadLogos(profile) }
     }
 
     private var unlockTitle: LocalizedStringResource {
@@ -119,9 +122,11 @@ struct ProfileRootView: View {
     }
 
     private func loadLogos(_ profile: Profile) async {
-        for unit in profile.units where !settledLogos.contains(unit.id) {
-            if case .ok(let data) = await model.api.unitLogo(unitId: unit.id) { logos[unit.id] = data }
-            settledLogos.insert(unit.id)
+        // Einheiten mit Rolle und die der Teilnehmenden (reine Eltern haben keine Rolle); jedes Logo einmal.
+        let ids = profile.units.map(\.id) + profile.participants.map(\.unitId)
+        for id in ids where !settledLogos.contains(id) {
+            if case .ok(let data) = await model.api.unitLogo(unitId: id) { logos[id] = data }
+            settledLogos.insert(id)
         }
     }
 
@@ -153,23 +158,42 @@ private struct UnitRow: View {
     }
 }
 
+/// Eine teilnehmende Person: Initialen, Name, darunter die Einheit; rechts Rang-Abzeichen und Logo der Einheit (sonst JF/KF).
+/// VoiceOver liest «Vorname Nachname, Einheit», das Logo ist Zierde. Ohne Angaben zur Einheit (älterer Server) bleibt die Zeile schlicht.
 private struct ChildRow: View {
     let child: ProfileParticipant
     let badge: Data?
+    let logo: Data?
+    let logoSettled: Bool
 
     var body: some View {
         HStack(spacing: Spacing.s3) {
             Avatar(initials: initials, style: .calm)
-            Text(verbatim: "\(child.firstName) \(child.lastName)").foregroundStyle(Color.frOnSurface)
+            VStack(alignment: .leading, spacing: Spacing.s1) {
+                Text(verbatim: "\(child.firstName) \(child.lastName)").foregroundStyle(Color.frOnSurface)
+                if let unitName = child.unitName {
+                    Text(verbatim: unitName).font(.subheadline).foregroundStyle(Color.frOnSurfaceVariant)
+                }
+            }
             Spacer(minLength: Spacing.s2)
             if let stars = child.badge?.stars {
                 RangAbzeichen(badge, width: 28, stars: stars)
             } else if child.badge != nil {
                 RangAbzeichen(badge, width: 28)
             }
+            if let unitType = child.unitType {
+                UnitMark(data: logo, type: unitType, settled: logoSettled, size: 32)
+            }
         }
         .frame(minHeight: Sizes.touchTarget)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(spoken)
+    }
+
+    private var spoken: Text {
+        let name = "\(child.firstName) \(child.lastName)"
+        guard let unitName = child.unitName else { return Text(verbatim: name) }
+        return Text("\(name), \(unitName)")
     }
 
     private var initials: String { String([child.firstName.first, child.lastName.first].compactMap { $0 }) }

@@ -8,8 +8,8 @@ enum ProfilePreviewData {
             #"{"id":"u\#(index)","name":"Musterstadt \#(index + 1)","typ":"jf","bezirk":"Beispielbezirk","rolle":"leitung"}"#
         }.joined(separator: ",")
         let childJSON = parent ? #"""
-        {"id":"p1","vorname":"Mia","nachname":"Muster","einheitId":"u0","art":"eltern","abzeichen":{"kuerzel":"A","sterne":1}},
-        {"id":"p2","vorname":"Noah","nachname":"Muster","einheitId":"u0","art":"eltern","abzeichen":{"kuerzel":"B","sterne":2}}
+        {"id":"p1","vorname":"Mia","nachname":"Muster","einheitId":"u0","einheitName":"JF Beispielstadt","einheitTyp":"jf","art":"eltern","abzeichen":{"kuerzel":"A","sterne":1}},
+        {"id":"p2","vorname":"Noah","nachname":"Muster","einheitId":"u0","einheitName":"KF Beispielstadt","einheitTyp":"kf","art":"eltern","abzeichen":{"kuerzel":"B","sterne":2}}
         """# : ""
         let json = #"""
         {"id":"x1","name":"Alex Muster","benutzername":"alex.muster","kantonsadmin":false,"zweiterFaktor":false,

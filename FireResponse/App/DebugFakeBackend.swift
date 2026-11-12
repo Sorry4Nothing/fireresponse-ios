@@ -137,7 +137,7 @@ private nonisolated final class FakeBackendProtocol: URLProtocol, @unchecked Sen
 
     private func profileJSON(_ username: String, _ account: FakeAccount) -> String {
         let unit = #"{"id":"11111111-1111-1111-1111-111111111111","name":"Kinder- und Jugendfeuerwehr Beispielstadt","typ":"kf","bezirk":"Beispielbezirk","rolle":"kommandant"}"#
-        let children = #"[{"id":"c1","vorname":"Lena","nachname":"Beispiel","einheitId":"11111111-1111-1111-1111-111111111111","art":"eltern","abzeichen":{"kuerzel":"R2","sterne":2}},{"id":"c2","vorname":"Noah","nachname":"Beispiel","einheitId":"11111111-1111-1111-1111-111111111111","art":"eltern","abzeichen":{"kuerzel":"R1","sterne":1}}]"#
+        let children = #"[{"id":"c1","vorname":"Lena","nachname":"Beispiel","einheitId":"11111111-1111-1111-1111-111111111111","einheitName":"JF Beispielstadt","einheitTyp":"jf","art":"eltern","abzeichen":{"kuerzel":"R2","sterne":2}},{"id":"c2","vorname":"Noah","nachname":"Beispiel","einheitId":"11111111-1111-1111-1111-111111111111","einheitName":"JF Beispielstadt","einheitTyp":"jf","art":"eltern","abzeichen":{"kuerzel":"R1","sterne":1}}]"#
         let units = account.hasUnit && !account.isParent ? "[\(unit)]" : "[]"
         let participants = account.hasUnit && account.isParent ? children : "[]"
         return #"{"id":"u-\#(username)","name":"\#(account.name)","benutzername":"\#(username)","kantonsadmin":false,"zweiterFaktor":false,"einwilligung":\#(account.consented),"mussPasswortAendern":\#(account.mustChangePassword),"pushProgramme":true,"einheiten":\#(units),"teilnehmende":\#(participants)}"#
