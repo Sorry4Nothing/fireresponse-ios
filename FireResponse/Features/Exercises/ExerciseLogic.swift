@@ -25,19 +25,19 @@ nonisolated struct ProgramDay: Equatable, Identifiable {
     var id: String { programs.first?.id ?? "leer" }
 }
 
+/// Wann sich antworten lässt (aus `isAttendanceOpen`, `isRegistrable` und `registrationFrom` der API; die App rechnet das Fenster nicht selbst).
+nonisolated enum RegistrationWindow: Equatable {
+    case open
+    case opensOn(SwissDay)
+    case closed
+}
+
 /// Ein Monat der Zeitleiste; `heading` fehlt bei Tagen ohne lesbare Zeit.
 nonisolated struct MonthSection: Equatable, Identifiable {
     let key: Int?
     let heading: String?
     var days: [ProgramDay]
     var id: String { key.map(String.init) ?? "ohne-zeit-\(days.first?.id ?? "")" }
-}
-
-/// Wann sich antworten lässt (aus `isAttendanceOpen`, `isRegistrable` und `registrationFrom` der API; die App rechnet das Fenster nicht selbst).
-nonisolated enum RegistrationWindow: Equatable {
-    case open
-    case opensOn(SwissDay)
-    case closed
 }
 
 nonisolated enum ExerciseRules {
