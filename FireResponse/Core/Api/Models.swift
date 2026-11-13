@@ -9,11 +9,50 @@ nonisolated extension JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let text = try decoder.singleValueContainer().decode(String.self)
-            if let date = try? Date(text, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: true)) { return date }
-            return try Date(text, strategy: Date.ISO8601FormatStyle())
+            if let date = Date.fromAPI(text) { return date }
+            throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Kein Datum: \(text)"))
         }
         return decoder
     }
+}
+
+nonisolated extension Date {
+    /// ISO 8601 mit Zeitzone, mit und ohne Millisekunden.
+    static func fromAPI(_ text: String) -> Date? {
+        (try? Date(text, strategy: Date.ISO8601FormatStyle(includingFractionalSeconds: true))) ?? (try? Date(text, strategy: Date.ISO8601FormatStyle()))
+    }
+}
+
+/// Was der Wartungsbildschirm zeigt: Text und voraussichtliches Ende, beides vom Betreiber und beides optional.
+/// Das ist die einzige Stelle, an der die App einen Text des Servers anzeigt: Das Panel setzt ihn (höchstens 280 Zeichen), er ist kein Fehlertext.
+nonisolated struct MaintenanceInfo: Sendable, Equatable {
+    static let maxTextLength = 280
+    let text: String?
+    let until: Date?
+
+    init(text: String?, until: Date?) {
+        let trimmed = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        self.text = trimmed.isEmpty ? nil : String(trimmed.prefix(Self.maxTextLength))
+        self.until = until
+    }
+}
+
+/// `GET /api/v1/wartung`: öffentlich, ohne Sitzung, antwortet immer 200.
+nonisolated struct MaintenanceStatus: Decodable, Sendable, Equatable {
+    let isActive: Bool
+    let text: String?
+    let until: Date?
+    let since: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case isActive = "aktiv"
+        case text
+        case until = "ende"
+        case since = "seit"
+    }
+
+    /// `nil`, wenn keine Wartung läuft.
+    var info: MaintenanceInfo? { isActive ? MaintenanceInfo(text: text, until: until) : nil }
 }
 
 /// Schweizer Kalendertag (`JJJJ-MM-TT`), unabhängig von der Zeitzone des Geräts.

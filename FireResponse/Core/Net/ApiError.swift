@@ -6,6 +6,8 @@ nonisolated enum ApiError: Error, Sendable, Equatable {
     case forbidden
     case notFound
     case appOutdated
+    /// 503 mit Code `WARTUNG`: Das Backend ist in Wartung (Vorrang vor allem, Issue #64).
+    case maintenance
     case tooManyRequests
     /// 409 `PROGRAMM_GESCHLOSSEN` (und jedes andere 409): Programm abgesagt oder begonnen.
     case registrationClosed
@@ -30,6 +32,7 @@ nonisolated enum ApiError: Error, Sendable, Equatable {
             }
         case 426: .appOutdated
         case 429: .tooManyRequests
+        case 503: code == "WARTUNG" ? .maintenance : .unknown
         default: .unknown
         }
     }
@@ -66,4 +69,6 @@ nonisolated enum ApiEvent: Sendable, Equatable {
     /// 403 unter `/api/v1`: «kein Recht», aber auch «Passwortwechsel offen» oder «Einwilligung fehlt». Die App liest
     /// dann `FireResponseAPI.me()` (bleibt offen) und führt zum Passwortwechsel oder zur Einwilligung.
     case forbidden
+    /// 503 `WARTUNG` bei irgendeinem Aufruf: Der Wartungsbildschirm hat Vorrang vor allem.
+    case maintenance(MaintenanceInfo)
 }

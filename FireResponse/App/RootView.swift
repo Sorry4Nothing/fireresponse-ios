@@ -11,6 +11,13 @@ struct RootView: View {
                 OnboardingRootView()
             }
         }
+        .accessibilityHidden(model.maintenance != nil)
+        // Wartung hat Vorrang vor allem ausser der App-Sperre: Sie liegt über den Inhalten, die darunter stehen bleiben.
+        .overlay {
+            if let info = model.maintenance {
+                MaintenanceView(info: info, check: model.maintenanceCheck) { Task { await model.recheckMaintenance() } }
+            }
+        }
         .tint(.frAccent)
         .appLock()
         .pushRegistration()

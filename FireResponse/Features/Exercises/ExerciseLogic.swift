@@ -278,6 +278,7 @@ nonisolated enum ExerciseMessage {
         case .registrationClosed: "Die Anmeldung ist geschlossen. Die Übung ist abgesagt oder hat schon begonnen."
         case .registrationNotOpen: "Die Anmeldung ist noch nicht offen."
         case .appointmentStarted: "Die Übung hat schon begonnen. Die Anmeldung lässt sich nicht mehr ändern."
+        case .maintenance: "FireResponse wird gerade gewartet. Bitte versuche es später noch einmal."
         case .network: "Keine Verbindung. Prüfe dein Internet und versuche es nochmals."
         case .unknown: "Etwas ist schiefgelaufen. Bitte versuche es nochmals."
         }

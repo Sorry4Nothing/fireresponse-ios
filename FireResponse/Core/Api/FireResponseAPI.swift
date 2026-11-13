@@ -117,6 +117,11 @@ nonisolated struct FireResponseAPI: Sendable {
         return .ok(await SVGRasterizer.displayable(data, size: size))
     }
 
+    /// Öffentlicher Wartungsstatus (ohne Sitzung). Der einzige Aufruf, den die Wartung nie mit 503 beantwortet.
+    func maintenanceStatus() async -> ApiResult<MaintenanceStatus> {
+        await client.send(.maintenance)
+    }
+
     // MARK: Push
 
     /// Der Server verlangt 20 bis 512 Zeichen aus Buchstaben, Ziffern und `_ : . -` und die Plattform `ios`.
