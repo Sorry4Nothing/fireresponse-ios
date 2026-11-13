@@ -288,6 +288,22 @@ struct InfoChannelTests {
         #expect(model.editing == nil && service.state.withLock { $0.deleted }.isEmpty)
     }
 
+    @Test func newMarkersFollowTheUnreadCountAndNewArrivals() async {
+        let service = FakeInfoService()
+        service.state.withLock {
+            $0.pages = [InfoMessagePage(canWrite: true, messages: [.sample(id: "m3", text: "eigene", own: true), .sample(id: "m2", text: "b"), .sample(id: "m1", text: "a")], next: nil)]
+        }
+        let model = InfoConversationModel(channel: .sample(canWrite: true, unread: 1), service: service)
+        await model.load()
+        #expect(model.newIds == ["m2"]) // eine ungelesene: die neueste von anderen; die eigene zählt nie
+        service.state.withLock {
+            $0.pages = [InfoMessagePage(canWrite: true, messages: [.sample(id: "m5", text: "neu"), .sample(id: "m4", text: "eigen", own: true),
+                                                                    .sample(id: "m3", text: "eigene", own: true), .sample(id: "m2", text: "b"), .sample(id: "m1", text: "a")], next: nil)]
+        }
+        await model.load()
+        #expect(model.newIds == ["m2", "m5"])
+    }
+
     @Test func onlyHttpLinksBecomeTappable() {
         let text = "Infos: https://example.org/lager, Mail: mailto:test@example.org, ftp://example.org/datei"
         let links = InfoText.attributed(text).runs.compactMap(\.link)
