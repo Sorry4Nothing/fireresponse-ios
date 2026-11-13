@@ -106,13 +106,16 @@ private struct Summary: View {
             .background(total == 0 ? Color.frSurfaceContainerHigh : .clear, in: .capsule)
             HStack(spacing: Spacing.s4) {
                 Label("\(counts.yes) Ja", systemImage: "checkmark").foregroundStyle(Color.frOnSuccessContainer)
+                if counts.waitlist > 0 { Label("\(counts.waitlist) Warteliste", systemImage: "clock").foregroundStyle(Color.frOnSurfaceVariant) }
                 Label("\(counts.no) Nein", systemImage: "xmark").foregroundStyle(Color.frOnErrorContainer)
                 Label("\(counts.open) offen", systemImage: "questionmark.circle").foregroundStyle(Color.frOnSurfaceVariant)
             }
             .font(.footnote.weight(.bold))
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(counts.yes) Ja, \(counts.no) Nein, \(counts.open) offen von \(total)")
+        .accessibilityLabel(counts.waitlist > 0
+            ? "\(counts.yes) Ja, \(counts.waitlist) Warteliste, \(counts.no) Nein, \(counts.open) offen von \(total)"
+            : "\(counts.yes) Ja, \(counts.no) Nein, \(counts.open) offen von \(total)")
     }
 
     @ViewBuilder private func segment(_ count: Int, _ color: Color, _ width: CGFloat) -> some View {
@@ -138,7 +141,7 @@ private struct PersonRow: View {
                 if let badge = row.badge { RangAbzeichen(badge.imagePath.flatMap { images.data[$0] }, width: 24, stars: badge.stars) }
                 if !typeSize.isAccessibilitySize { Spacer(minLength: Spacing.s2) }
             }
-            StatusChip(row.status == "ja" ? .yes : row.status == "nein" ? .no : .open)
+            StatusChip(row.status == "ja" ? .yes : row.status == "nein" ? .no : row.status == "warteliste" ? .waitlist : .open)
         }
         .padding(Spacing.s3)
         .frame(maxWidth: .infinity, minHeight: Sizes.touchTarget, alignment: .leading)

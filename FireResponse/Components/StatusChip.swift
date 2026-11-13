@@ -3,7 +3,7 @@ import SwiftUI
 /// Kleines Etikett für einen Zustand, immer mit Symbol und Wort. Nicht bedienbar.
 struct StatusChip: View {
     enum Kind: CaseIterable {
-        case yes, no, open, review, unassigned
+        case yes, no, open, review, unassigned, waitlist
     }
 
     let kind: Kind
@@ -17,7 +17,7 @@ struct StatusChip: View {
             .padding(.horizontal, 10)
             .frame(minHeight: 28)
             .background(background, in: .capsule)
-            .overlay(Capsule().stroke(Color.frOutline, lineWidth: kind == .open ? 1 : 0))
+            .overlay(Capsule().stroke(Color.frOutline, lineWidth: kind == .open || kind == .waitlist ? 1 : 0))
     }
 
     private var title: LocalizedStringResource {
@@ -27,6 +27,7 @@ struct StatusChip: View {
         case .open: "Offen"
         case .review: "Prüfen"
         case .unassigned: "Nicht zugeordnet"
+        case .waitlist: "Warteliste"
         }
     }
 
@@ -37,6 +38,7 @@ struct StatusChip: View {
         case .open: "questionmark.circle"
         case .review: "exclamationmark.triangle"
         case .unassigned: "person.crop.circle.badge.questionmark"
+        case .waitlist: "clock"
         }
     }
 
@@ -44,7 +46,7 @@ struct StatusChip: View {
         switch kind {
         case .yes: .frSuccessContainer
         case .no: .frErrorContainer
-        case .open: .clear
+        case .open, .waitlist: .clear
         case .review: .frWarningContainer
         case .unassigned: .frSecondaryContainer
         }
@@ -54,7 +56,7 @@ struct StatusChip: View {
         switch kind {
         case .yes: .frOnSuccessContainer
         case .no: .frOnErrorContainer
-        case .open: .frOnSurface
+        case .open, .waitlist: .frOnSurface
         case .review: .frOnWarningContainer
         case .unassigned: .frOnSecondaryContainer
         }

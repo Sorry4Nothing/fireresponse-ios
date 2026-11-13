@@ -52,6 +52,16 @@ final class PreviewExercisesService: ExercisesService, @unchecked Sendable {
              "art":"Übung","anmeldbar":true,"anmeldungAb":"\#(day(28))","teilnahmeOffen":false,"einheit":{"id":"e1","name":"JF Beispielstadt","typ":"jf"},
              \#(own)"teilnehmende":\#(participantsJSON(id))}
             """#
+        case "p5":
+            // Termin mit Plätzen für Leitende (Issue #66): drei von vier Plätzen belegt, eine Person wartet; die eigene Zusage steht in `own`.
+            let ownStatus = answers.withLock { $0["p5/leitung"] } ?? "offen"
+            let waiting = ownStatus == "warteliste"
+            let slots = #"{"hoechstzahl":4,"belegt":4,"frei":0,"voll":true,"wartende":\#(waiting ? 2 : 1),"eigenePosition":\#(waiting ? "2" : "null")}"#
+            return #"""
+            {"id":"p5","titel":"Sommerlager planen","status":"aktiv","ganztaegig":false,"beginn":"\#(iso(days: 5, hour: 19))","ende":"\#(iso(days: 5, hour: 21))",
+             "art":"Termin","anmeldbar":true,"anmeldungAb":"\#(day(-1))","teilnahmeOffen":true,"einheit":{"id":"e1","name":"JF Beispielstadt","typ":"jf"},
+             \#(own)"leitungPlaetze":\#(slots),"teilnehmende":[]}
+            """#
         default:
             return #"""
             {"id":"p4","titel":"Besuch Nachbarfeuerwehr","status":"abgesagt","ganztaegig":false,"beginn":"\#(iso(days: 10, hour: 9))","ende":"\#(iso(days: 10, hour: 12))",
@@ -64,7 +74,8 @@ final class PreviewExercisesService: ExercisesService, @unchecked Sendable {
     private func decode<T: Decodable>(_ json: String) -> T? { try? JSONDecoder.api.decode(T.self, from: Data(json.utf8)) }
 
     func programs(from: SwissDay, to: SwissDay) async -> ApiResult<ProgramList> {
-        let list: ProgramList? = decode(#"{"programme":[\#(["p1", "p2", "p4", "p3"].map(programJSON).joined(separator: ","))]}"#)
+        let ids = leader ? ["p1", "p2", "p5", "p4", "p3"] : ["p1", "p2", "p4", "p3"]
+        let list: ProgramList? = decode(#"{"programme":[\#(ids.map(programJSON).joined(separator: ","))]}"#)
         return list.map { .ok($0) } ?? .failure(.unknown)
     }
 
@@ -74,6 +85,19 @@ final class PreviewExercisesService: ExercisesService, @unchecked Sendable {
     }
 
     func participations(programId: String) async -> ApiResult<Participations> {
+        if programId == "p5" {
+            let value: Participations? = decode("""
+            {"zahlen":{"teilnehmende":{"ja":0,"nein":0,"offen":0},"leitende":{"ja":4,"nein":0,"offen":0,"warteliste":2}},
+             "teilnehmende":[],
+             "leitungPlaetze":{"hoechstzahl":4,"belegt":4,"frei":0,"voll":true,"wartende":2,"eigenePosition":null},
+             "leitende":[{"id":"l1","name":"Petra Beispiel","rolle":"kommandant","status":"ja","bildUrl":null,"abzeichen":null},
+                         {"id":"l2","name":"Sandra Probe","rolle":"leitung","status":"ja","bildUrl":null,"abzeichen":null},
+                         {"id":"l3","name":"Tom Test","rolle":"leitung","status":"ja","bildUrl":null,"abzeichen":null},
+                         {"id":"l4","name":"Uri Muster","rolle":"leitung","status":"ja","bildUrl":null,"abzeichen":null},
+                         {"id":"l5","name":"Vera Beispiel","rolle":"leitung","status":"warteliste","position":1,"bildUrl":null,"abzeichen":null}]}
+            """)
+            return value.map { .ok($0) } ?? .failure(.unknown)
+        }
         let value: Participations? = decode("""
         {"zahlen":{"teilnehmende":{"ja":2,"nein":1,"offen":2},"leitende":{"ja":1,"nein":0,"offen":1}},
          "teilnehmende":[{"id":"t1","vorname":"Ben","nachname":"Beispiel","status":"ja","abzeichen":null},
@@ -93,10 +117,10 @@ final class PreviewExercisesService: ExercisesService, @unchecked Sendable {
         return .ok(())
     }
 
-    func setLeadership(programId: String, answer: Answer) async -> ApiResult<Void> {
+    func setLeadership(programId: String, answer: Answer) async -> ApiResult<LeadershipResult> {
         try? await Task.sleep(for: .milliseconds(400))
         answers.withLock { $0["\(programId)/leitung"] = answer.rawValue }
-        return .ok(())
+        return .ok(LeadershipResult(status: answer.rawValue, position: nil))
     }
 
     func personImage(path: String) async -> ApiResult<Data> { .failure(.notFound) }
@@ -115,6 +139,18 @@ final class PreviewExercisesService: ExercisesService, @unchecked Sendable {
 }
 
 #Preview("Liste Nacht, normal") { ExercisesStack(service: PreviewExercisesService(), profile: PreviewExercisesService.profile).preferredColorScheme(.dark) }
+#Preview("Liste Leitung, Plätze, Nacht") {
+    ExercisesStack(service: PreviewExercisesService(leader: true), profile: PreviewExercisesService.profile).preferredColorScheme(.dark)
+}
+#Preview("Detail Leitung, Voll, Nacht") {
+    NavigationStack {
+        ExerciseDetailView(
+            id: "p5", service: PreviewExercisesService(leader: true), profile: PreviewExercisesService.profile,
+            images: RemoteImages(service: PreviewExercisesService(leader: true))
+        )
+    }
+    .preferredColorScheme(.dark)
+}
 #Preview("Liste Tag, AX3") {
     ExercisesStack(service: PreviewExercisesService(), profile: PreviewExercisesService.profile).dynamicTypeSize(.accessibility3)
 }

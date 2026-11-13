@@ -56,6 +56,14 @@ extension WidgetSnapshot {
                 if !people.isEmpty {
                     count = String(localized: "\(people.filter { $0.stand != .open }.count) von \(people.count)")
                 }
+                // Plätze der Leitenden (Issue #66): im Widget nur «Voll» oder «Warteliste», nie «Noch x Plätze».
+                if let slots = program.leaderSlots {
+                    if program.ownRegistration == "warteliste" {
+                        count = String(localized: "Warteliste")
+                    } else if slots.isFull {
+                        count = String(localized: "Voll")
+                    }
+                }
             }
 
             let spoken = [
@@ -64,6 +72,7 @@ extension WidgetSnapshot {
                 program.title,
                 String(localized: "Einheit \(program.unit.name)"),
                 opensText,
+                program.leaderSlots.map { LeaderSlotsText.line($0, own: program.ownRegistration).spoken },
                 people.isEmpty ? nil : people.map { "\($0.name): \(Self.spoken($0.stand))" }.joined(separator: ", "),
             ].compactMap { $0 }.joined(separator: ", ") + ". " + String(localized: "Öffnet die Übung")
 

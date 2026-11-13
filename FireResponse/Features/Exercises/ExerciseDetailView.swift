@@ -58,6 +58,7 @@ struct ExerciseDetailView: View {
                 if program.status == "pruefen" { StatusChip(.review) }
                 if let display = ExerciseFormat.timeDisplay(program) { TimeBlock(display: display) }
                 FactsCard(program: program)
+                LeaderSlotsSection(program: program, model: model, images: images)
                 if let contact = program.contact { ContactCard(contact: contact, images: images) }
                 AnswerSection(program: program, model: model, profile: profile, today: today, images: images)
                 if ExerciseRules.canSeeRegistrations(program, profile: profile) {
@@ -213,8 +214,18 @@ private struct AnswerSection: View {
                 }
                 if let own = program.ownRegistration {
                     let name = profile?.name ?? String(localized: "Du")
-                    row(name: name, target: .leadership, server: own == "offen" ? nil : own, initials: ExerciseRules.initials(name),
-                        imageData: profile?.imagePath.flatMap { images.data[$0] })
+                    if open, program.leaderSlots != nil {
+                        LeadershipControl(
+                            program: program, model: model, name: name, imageData: profile?.imagePath.flatMap { images.data[$0] },
+                            detail: detail(for: .leadership)
+                        )
+                    } else {
+                        row(name: name, target: .leadership, server: own == "offen" ? nil : own, initials: ExerciseRules.initials(name),
+                            imageData: profile?.imagePath.flatMap { images.data[$0] })
+                    }
+                }
+                if model.movedUp {
+                    Notice(.info, title: "Du bist nachgerückt.", message: "Du hast jetzt einen Platz bei dieser Übung.")
                 }
                 if model.saving != nil, slow {
                     Notice(.info, title: "Das dauert länger als sonst.", message: "Bitte noch einen Moment warten.")
@@ -224,6 +235,15 @@ private struct AnswerSection: View {
                 }
             }
             .task(id: profile?.imagePath) { await images.loadPerson(profile?.imagePath) }
+            // Rennen um den letzten Platz: ein Alert, kein Fehler (die Zusage ist eine Eintragung auf die Warteliste).
+            .alert(
+                "Der letzte Platz ist soeben vergeben worden.",
+                isPresented: Binding(get: { model.placeTaken }, set: { model.placeTaken = $0 })
+            ) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Du stehst auf der Warteliste.")
+            }
             .task(id: model.saving) {
                 slow = false
                 guard model.saving != nil else { return }
