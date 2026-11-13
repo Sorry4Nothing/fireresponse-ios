@@ -8,7 +8,6 @@ struct ApiContractTests {
     private static let root = URL(filePath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
     private static let endpointFile = "Endpoint.swift"
 
-
     /// `{id}`, `{einheitId}` und `$id` zählen gleich: Es kommt auf den Pfad an, nicht auf den Namen des Platzhalters.
     private func normalize(_ path: String) -> String {
         path.split(separator: "?").first.map(String.init)?
