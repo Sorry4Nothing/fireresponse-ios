@@ -9,8 +9,8 @@ struct ContrastTests {
     private static let appearances: [(name: String, traits: UITraitCollection)] = [
         ("Nacht", .init(userInterfaceStyle: .dark)),
         ("Tag", .init(userInterfaceStyle: .light)),
-        ("Nacht, Mehr Kontrast", UITraitCollection(traitsFrom: [.init(userInterfaceStyle: .dark), .init(accessibilityContrast: .high)])),
-        ("Tag, Mehr Kontrast", UITraitCollection(traitsFrom: [.init(userInterfaceStyle: .light), .init(accessibilityContrast: .high)]))
+        ("Nacht, Mehr Kontrast", UITraitCollection { $0.userInterfaceStyle = .dark; $0.accessibilityContrast = .high }),
+        ("Tag, Mehr Kontrast", UITraitCollection { $0.userInterfaceStyle = .light; $0.accessibilityContrast = .high })
     ]
 
     /// Textpaare (Vordergrund, Hintergrund), mindestens 4.5:1.
