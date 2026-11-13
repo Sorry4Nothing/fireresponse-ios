@@ -144,20 +144,6 @@ struct ApiClientTests {
         #expect(await iterator.next() == .forbidden)
     }
 
-    @Test func infoChannelPathsCarryOnlyUUIDs() async {
-        let (_, api, _) = makeClient(cookie: "session=abc") { _ in StubReply(204) }
-        let unit = "0f8fad5b-d9cb-469f-a165-70867728950e"
-        #expect(await api.markInfoRead(unitId: "../ich").error == .notFound)
-        #expect(await api.infoMessages(unitId: unit, before: "../x", limit: 50).error == .notFound)
-        #expect(await api.postInfoMessage(unitId: "x", text: "Hallo").error == .notFound)
-        #expect(StubURLProtocol.recorded.isEmpty)
-        _ = await api.markInfoRead(unitId: unit)
-        #expect(StubURLProtocol.recorded.last?.request.url?.path == "/api/v1/infokanaele/\(unit)/gelesen")
-        #expect(StubURLProtocol.recorded.last?.request.httpMethod == "PUT")
-        _ = await api.infoMessages(unitId: unit, before: unit, limit: 500)
-        #expect(StubURLProtocol.recorded.last?.request.url?.query == "limit=100&vor=\(unit)")
-    }
-
     @Test func forbiddenOnAuthRouteEmitsNothing() async {
         let (client, api, _) = makeClient { _ in StubReply(403) }
         #expect(await api.signOut().error == .forbidden)
@@ -260,5 +246,21 @@ struct ApiClientTests {
 
     @Test func pathValuesAreEncoded() {
         #expect(Endpoint.program.path("a/b c") == "/api/v1/programme/a%2Fb%20c")
+    }
+}
+
+extension ApiClientTests {
+    @Test func infoChannelPathsCarryOnlyUUIDs() async {
+        let (_, api, _) = makeClient(cookie: "session=abc") { _ in StubReply(204) }
+        let unit = "0f8fad5b-d9cb-469f-a165-70867728950e"
+        #expect(await api.markInfoRead(unitId: "../ich").error == .notFound)
+        #expect(await api.infoMessages(unitId: unit, before: "../x", limit: 50).error == .notFound)
+        #expect(await api.postInfoMessage(unitId: "x", text: "Hallo").error == .notFound)
+        #expect(StubURLProtocol.recorded.isEmpty)
+        _ = await api.markInfoRead(unitId: unit)
+        #expect(StubURLProtocol.recorded.last?.request.url?.path == "/api/v1/infokanaele/\(unit)/gelesen")
+        #expect(StubURLProtocol.recorded.last?.request.httpMethod == "PUT")
+        _ = await api.infoMessages(unitId: unit, before: unit, limit: 500)
+        #expect(StubURLProtocol.recorded.last?.request.url?.query == "limit=100&vor=\(unit)")
     }
 }
