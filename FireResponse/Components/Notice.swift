@@ -8,11 +8,14 @@ struct Notice: View {
     let kind: Kind
     let title: LocalizedStringResource
     var message: LocalizedStringResource?
+    /// Gesetzt: der Hinweis lässt sich schliessen.
+    var onDismiss: (() -> Void)?
 
-    init(_ kind: Kind, title: LocalizedStringResource, message: LocalizedStringResource? = nil) {
+    init(_ kind: Kind, title: LocalizedStringResource, message: LocalizedStringResource? = nil, onDismiss: (() -> Void)? = nil) {
         self.kind = kind
         self.title = title
         self.message = message
+        self.onDismiss = onDismiss
     }
 
     var body: some View {
@@ -23,6 +26,10 @@ struct Notice: View {
                 if let message { Text(message) }
             }
             Spacer(minLength: 0)
+            if let onDismiss {
+                Button(action: onDismiss) { Image(systemName: "xmark") }
+                    .accessibilityLabel("Hinweis schliessen").frame(minWidth: Sizes.touchTarget, minHeight: Sizes.touchTarget)
+            }
         }
         .font(.subheadline)
         .foregroundStyle(foreground)

@@ -6,6 +6,7 @@ struct LeaderSlotsSection: View {
     let program: Program
     let model: ExerciseDetailModel
     let images: RemoteImages
+    var ownId: String?
 
     var body: some View {
         if let slots = model.leaderSlots ?? program.leaderSlots {
@@ -15,12 +16,19 @@ struct LeaderSlotsSection: View {
             let waiting = model.leaders.filter { $0.status == "warteliste" }.sorted { ($0.position ?? .max) < ($1.position ?? .max) }
             VStack(alignment: .leading, spacing: Spacing.s3) {
                 Text("Leiter-Plätze").font(.title3.bold()).foregroundStyle(Color.frOnSurface).accessibilityAddTraits(.isHeader)
+                Text("\(slots.taken) von \(slots.maxCount) belegt").font(.body).foregroundStyle(Color.frOnSurfaceVariant)
                 Label(line.text, systemImage: line.symbol).font(.body.weight(.semibold)).foregroundStyle(Color.frOnSurface)
                     .accessibilityLabel(line.spoken)
                 ForEach(confirmed) { leader in
                     HStack(spacing: Spacing.s3) {
                         Avatar(initials: ExerciseRules.initials(leader.name), style: .calm, imageData: leader.imagePath.flatMap { images.data[$0] })
-                        Text(verbatim: leader.name).font(.body).foregroundStyle(Color.frOnSurface)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(verbatim: leader.id == ownId ? "\(leader.name) · \(String(localized: "Du"))" : leader.name)
+                                .font(.body).foregroundStyle(Color.frOnSurface)
+                            if let role = LeaderSlotsText.roleName(leader.role) {
+                                Text(role).font(.footnote).foregroundStyle(Color.frOnSurfaceVariant)
+                            }
+                        }
                         Spacer(minLength: 0)
                     }
                     .frame(minHeight: Sizes.touchTarget)
@@ -80,6 +88,8 @@ struct LeadershipControl: View {
                 waitlisted
             } else if own != "ja", slots?.isFull == true {
                 joinWaitlist
+            } else if own == "ja", slots != nil {
+                confirmed
             } else {
                 ResponseControl(
                     name: name, initials: ExerciseRules.initials(name), imageData: imageData,
@@ -93,10 +103,25 @@ struct LeadershipControl: View {
             }
         }
         .alert("Absagen?", isPresented: $confirmDecline) {
-            Button("Abbrechen", role: .cancel) {}
+            Button("Zusage behalten", role: .cancel) {}
             Button("Absagen", role: .destructive) { Task { await model.answer(.no, for: .leadership) } }
         } message: {
             Text((slots?.waiting ?? 0) > 0 ? "Dein Platz geht an die nächste Person auf der Warteliste." : "Dein Platz wird frei.")
+        }
+    }
+
+    private var confirmed: some View {
+        VStack(alignment: .leading, spacing: Spacing.s3) {
+            HStack(spacing: Spacing.s3) {
+                Avatar(initials: ExerciseRules.initials(name), style: .calm, imageData: imageData)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Du hast zugesagt").font(.body.weight(.semibold)).foregroundStyle(Color.frOnSurface)
+                    Text("Der Platz gehört dir.").font(.footnote).foregroundStyle(Color.frOnSurfaceVariant)
+                }
+            }
+            .accessibilityElement(children: .combine)
+            FRButton("Absagen", kind: .outline) { confirmDecline = true }
+                .disabled(model.saving != nil)
         }
     }
 
@@ -110,6 +135,7 @@ struct LeadershipControl: View {
                 }
             }
             .accessibilityElement(children: .combine)
+            Text("Sagt jemand ab, rückst du automatisch nach.").font(.footnote).foregroundStyle(Color.frOnSurfaceVariant)
             FRButton(savingOwn ? "Wird entfernt …" : "Von der Warteliste nehmen", kind: .outline) {
                 Task { await model.answer(.no, for: .leadership) }
             }
