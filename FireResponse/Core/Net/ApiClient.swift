@@ -192,7 +192,12 @@ actor ApiClient {
                 continuation.yield(.unauthorized)
             }
             if status == 403, endpoint.isAppRoute { continuation.yield(.forbidden) }
-            let code = (400..<500).contains(status) ? Self.errorCode(in: data) : nil
+            let body = (400..<600).contains(status) ? Self.errorBody(in: data) : nil
+            let code = body?.code
+            if status == 503, code == "WARTUNG" {
+                // Wartung hat Vorrang: Text und Ende kommen aus dem Body, sonst zeigt die App ihren Standardtext.
+                continuation.yield(.maintenance(MaintenanceInfo(text: body?.message, until: body?.ende.flatMap(Date.fromAPI))))
+            }
             let retry = status == 429
                 ? http.value(forHTTPHeaderField: "X-Retry-After").flatMap { Int($0) }.map { min(max($0, 1), Self.maxRetryAfter) }
                 : nil
@@ -202,10 +207,14 @@ actor ApiClient {
         return data.count > maxBytes ? .failure(.unknown) : .ok(data)
     }
 
-    private struct ErrorBody: Decodable { let code: String? }
+    private struct ErrorBody: Decodable {
+        let code: String?
+        let message: String?
+        let ende: String?
+    }
 
-    /// Nur `code` zählt; `message` liest die App nie.
-    private static func errorCode(in data: Data) -> String? {
-        (try? JSONDecoder().decode(ErrorBody.self, from: data))?.code
+    /// `code` zählt immer. `message` und `ende` liest die App nur bei 503 `WARTUNG` (Text des Betreibers); sonst nie.
+    private static func errorBody(in data: Data) -> ErrorBody? {
+        try? JSONDecoder().decode(ErrorBody.self, from: data)
     }
 }

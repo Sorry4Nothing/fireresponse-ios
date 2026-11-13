@@ -352,3 +352,47 @@ struct PasswordRulesTests {
         #expect(FormError.waitText(900) == "15 Minuten")
     }
 }
+
+@MainActor @Suite(.serialized)
+struct MaintenanceTests {
+    private func makeModel(_ routes: [String: StubReply]) -> AppModel {
+        FlowStub.install(router(routes))
+        let store = InMemorySessionStore(cookie: "s=1")
+        let client = ApiClient(baseURL: URL(string: "https://api.example.org"), appVersion: "1.0.0", store: store, configuration: FlowStub.configuration)
+        return AppModel(api: FireResponseAPI(client: client))
+    }
+
+    @Test func standardTextWithoutEndAndWithEnd() throws {
+        let now = try #require(Date.fromAPI("2026-11-13T12:00:00+01:00"))
+        let same = try #require(Date.fromAPI("2026-11-13T22:00:00+01:00"))
+        let later = try #require(Date.fromAPI("2026-11-14T08:00:00+01:00"))
+        #expect(MaintenanceText.message(for: MaintenanceInfo(text: nil, until: nil), now: now)
+            == "FireResponse wird gerade gewartet. Bitte versuche es später noch einmal.")
+        #expect(MaintenanceText.message(for: MaintenanceInfo(text: nil, until: same), now: now)
+            == "FireResponse wird gerade gewartet, voraussichtlich bis 22:00 Uhr. Deine Zusagen bleiben gespeichert.")
+        #expect(MaintenanceText.message(for: MaintenanceInfo(text: nil, until: later), now: now).contains("Samstag, 14. November, 08:00 Uhr"))
+    }
+
+    @Test func operatorTextWinsAndIsLimited() throws {
+        let now = try #require(Date.fromAPI("2026-11-13T12:00:00+01:00"))
+        #expect(MaintenanceText.message(for: MaintenanceInfo(text: "  Update läuft.  ", until: nil), now: now) == "Update läuft.")
+        #expect(MaintenanceInfo(text: String(repeating: "a", count: 400), until: nil).text?.count == MaintenanceInfo.maxTextLength)
+        #expect(MaintenanceInfo(text: "   ", until: nil).text == nil)
+    }
+
+    @Test func recheckClearsTheMaintenanceAndKeepsItWhileActive() async {
+        let model = makeModel(["/api/v1/wartung": StubReply(200, json: #"{"aktiv":true,"text":null,"ende":null,"seit":null}"#)])
+        await model.recheckMaintenance()
+        #expect(model.maintenance == MaintenanceInfo(text: nil, until: nil) && model.maintenanceCheck == .stillOn)
+
+        FlowStub.install(router(["/api/v1/wartung": StubReply(200, json: #"{"aktiv":false,"text":null,"ende":null,"seit":null}"#)]))
+        await model.recheckMaintenance()
+        #expect(model.maintenance == nil && model.maintenanceCheck == .idle && model.maintenanceEnded == 1)
+    }
+
+    @Test func recheckWithoutNetworkKeepsTheScreen() async {
+        let model = makeModel([:]) // unbekannter Pfad: 404
+        await model.recheckMaintenance()
+        #expect(model.maintenanceCheck == .offline)
+    }
+}

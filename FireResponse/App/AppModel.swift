@@ -34,6 +34,15 @@ final class AppModel {
     private var failedSignIns = 0
     private var rechecking = false
 
+    /// Wartung (Issue #64): gesetzt, solange der Server mit 503 `WARTUNG` antwortet. Hat Vorrang vor allem und liegt über allen Phasen.
+    private(set) var maintenance: MaintenanceInfo?
+    /// Ergebnis von «Erneut prüfen».
+    private(set) var maintenanceCheck: MaintenanceCheck = .idle
+    /// Zählt das Ende einer Wartung: Die Übungsliste lädt dann neu.
+    private(set) var maintenanceEnded = 0
+
+    enum MaintenanceCheck: Equatable { case idle, checking, stillOn, offline }
+
     /// Ab so vielen Fehlversuchen in Folge sagt die Meldung, dass der Server das Konto sperren kann.
     static let repeatedFailureThreshold = 3
 
@@ -50,7 +59,29 @@ final class AppModel {
             switch event {
             case .unauthorized: if phase != .signedOut { await leave(expired: true) }
             case .forbidden: await recheckAfterForbidden()
+            case .maintenance(let info): maintenance = info
             }
+        }
+    }
+
+    /// «Erneut prüfen» im Wartungsbildschirm: fragt `GET /wartung` (keine Dauerabfrage). Ist die Wartung vorbei, geht die App weiter,
+    /// wo sie war; ein Start, der an der Wartung scheiterte, läuft neu.
+    func recheckMaintenance() async {
+        guard maintenanceCheck != .checking else { return }
+        maintenanceCheck = .checking
+        switch await api.maintenanceStatus() {
+        case .ok(let status):
+            if let info = status.info {
+                maintenance = info
+                maintenanceCheck = .stillOn
+            } else {
+                maintenance = nil
+                maintenanceCheck = .idle
+                maintenanceEnded += 1
+                if phase == .launching { await start() }
+            }
+        case .failure:
+            maintenanceCheck = .offline
         }
     }
 

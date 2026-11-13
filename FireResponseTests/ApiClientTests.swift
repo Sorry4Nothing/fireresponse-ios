@@ -144,6 +144,38 @@ struct ApiClientTests {
         #expect(await iterator.next() == .forbidden)
     }
 
+    @Test func maintenanceBodyBecomesAnEventWithTextAndEnd() async throws {
+        let (client, api, _) = makeClient(cookie: "session=abc") { _ in
+            StubReply(503, json: #"{"code":"WARTUNG","message":"Update läuft.","ende":"2026-11-13T21:00:00+01:00"}"#)
+        }
+        #expect(await api.me().error == .maintenance)
+        var iterator = client.events.makeAsyncIterator()
+        let event = await iterator.next()
+        let end = try #require(Date.fromAPI("2026-11-13T21:00:00+01:00"))
+        #expect(event == .maintenance(MaintenanceInfo(text: "Update läuft.", until: end)))
+    }
+
+    @Test func serviceUnavailableWithoutMaintenanceCodeIsAnOrdinaryError() async throws {
+        let (client, api, _) = makeClient(cookie: "session=abc") { request in
+            request.url?.path == "/api/v1/ich" ? StubReply(503, json: #"{"code":"ANDERES"}"#) : StubReply(403)
+        }
+        #expect(await api.me().error == .unknown)
+        // Das einzige Ereignis ist das 403 danach: Das 503 ohne den Code `WARTUNG` hat keines erzeugt.
+        _ = await api.unitContact(unitId: "0f8fad5b-d9cb-469f-a165-70867728950e")
+        var iterator = client.events.makeAsyncIterator()
+        #expect(await iterator.next() == .forbidden)
+    }
+
+    @Test func maintenanceStatusIsPublicAndDecodes() async {
+        let (_, api, _) = makeClient { _ in
+            StubReply(200, json: #"{"aktiv":true,"text":null,"ende":"2026-11-13T21:00:00+01:00","seit":"2026-11-13T19:00:00+01:00"}"#)
+        }
+        let status = await api.maintenanceStatus().value
+        #expect(status?.isActive == true && status?.text == nil && status?.until != nil)
+        #expect(status?.info?.until == status?.until)
+        #expect(StubURLProtocol.recorded.last?.request.url?.path == "/api/v1/wartung")
+    }
+
     @Test func forbiddenOnAuthRouteEmitsNothing() async {
         let (client, api, _) = makeClient { _ in StubReply(403) }
         #expect(await api.signOut().error == .forbidden)

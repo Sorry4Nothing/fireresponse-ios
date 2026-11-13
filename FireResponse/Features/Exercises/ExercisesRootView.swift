@@ -12,19 +12,22 @@ struct ExercisesRootView: View {
     @Environment(AppModel.self) private var app
 
     var body: some View {
-        ExercisesStack(service: app.api, profile: app.profile)
+        ExercisesStack(service: app.api, profile: app.profile, reloadToken: app.maintenanceEnded)
     }
 }
 
 struct ExercisesStack: View {
     let service: any ExercisesService
     let profile: Profile?
+    /// Ändert sich, wenn eine Wartung endet: Die Liste lädt dann neu (sie stand vielleicht im Fehlerzustand).
+    var reloadToken = 0
     @State private var list: ExerciseListModel
     @State private var images: RemoteImages
     @State private var path = NavigationPath()
     private let router: PushRouter
 
-    init(service: any ExercisesService, profile: Profile?, router: PushRouter = PushCenter.shared.router) {
+    init(service: any ExercisesService, profile: Profile?, reloadToken: Int = 0, router: PushRouter = PushCenter.shared.router) {
+        self.reloadToken = reloadToken
         self.router = router
         self.service = service
         self.profile = profile
@@ -42,6 +45,7 @@ struct ExercisesStack: View {
                 .navigationDestination(for: RegistrationsRoute.self) { route in
                     RegistrationsView(route: route, service: service, images: images)
                 }
+                .onChange(of: reloadToken) { Task { await list.load() } }
                 .onChange(of: router.pending, initial: true) {
                     if case .appointment(let id) = router.consume() { path.append(DetailRoute(id: id)) }
                 }
