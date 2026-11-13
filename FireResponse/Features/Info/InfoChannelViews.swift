@@ -30,8 +30,12 @@ struct InfoChannelRootView: View {
             .navigationTitle(singleName ?? String(localized: "Infokanal"))
             .navigationBarTitleDisplayMode(singleName == nil ? .large : .inline)
             .navigationDestination(for: InfoChannel.self) { channel in
-                InfoConversationView(channel: channel, service: model.service, onRead: { model.markedRead(unitId: channel.id) })
-                    .id(channel.id)
+                // Wer mehrere Einheiten hat, wechselt im Kopf über ein Menü; der neue Verlauf ersetzt den alten.
+                InfoConversationView(
+                    channel: channel, service: model.service, siblings: model.channels,
+                    onSwitch: { path = [$0] }, onRead: { model.markedRead(unitId: channel.id) }
+                )
+                .id(channel.id)
             }
         }
         .task { await model.load() }
@@ -131,9 +135,16 @@ struct InfoConversationView: View {
     @State private var confirmSend = false
     @State private var deleting: InfoMessage?
     @FocusState private var inputFocused: Bool
+    private let siblings: [InfoChannel]
+    private let onSwitch: (InfoChannel) -> Void
 
-    init(channel: InfoChannel, service: any InfoChannelService, onRead: @escaping @MainActor () -> Void = {}) {
+    init(
+        channel: InfoChannel, service: any InfoChannelService, siblings: [InfoChannel] = [],
+        onSwitch: @escaping (InfoChannel) -> Void = { _ in }, onRead: @escaping @MainActor () -> Void = {}
+    ) {
         _model = State(initialValue: InfoConversationModel(channel: channel, service: service, onRead: onRead))
+        self.siblings = siblings
+        self.onSwitch = onSwitch
     }
 
     var body: some View {
@@ -141,6 +152,19 @@ struct InfoConversationView: View {
             .background(Color.frSurface)
             .navigationTitle(model.channel.name)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if siblings.count > 1 {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            ForEach(siblings.filter { $0.id != model.channel.id }) { other in
+                                Button(other.name) { onSwitch(other) }
+                            }
+                        } label: {
+                            Label("Einheit wechseln", systemImage: "arrow.left.arrow.right")
+                        }
+                    }
+                }
+            }
             .safeAreaInset(edge: .bottom) { bottomBar }
             .task { await model.load() }
             .refreshable { await model.load() }
@@ -176,6 +200,7 @@ struct InfoConversationView: View {
                 .padding(Spacing.s6).frame(maxWidth: .infinity)
             }
         case .loaded:
+            ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: Spacing.s3) {
                     if model.next != nil {
@@ -190,7 +215,8 @@ struct InfoConversationView: View {
                                 .foregroundStyle(Color.frOnSurfaceVariant).frame(maxWidth: .infinity).padding(.top, Spacing.s2)
                                 .accessibilityAddTraits(.isHeader)
                         }
-                        MessageCard(message: message, onEdit: { start(editing: message) }, onDelete: { deleting = message })
+                        MessageCard(message: message, isNew: model.newIds.contains(message.id), onEdit: { start(editing: message) }, onDelete: { deleting = message })
+                            .id(message.id)
                     }
                 }
                 .padding(.horizontal, Spacing.s4)
@@ -199,6 +225,11 @@ struct InfoConversationView: View {
                 .frame(maxWidth: .infinity)
             }
             .defaultScrollAnchor(.bottom)
+            // Nach dem Senden und bei einer neuen Mitteilung unten bleiben.
+            .onChange(of: model.messages.last?.id) { _, last in
+                if let last { withAnimation { proxy.scrollTo(last, anchor: .bottom) } }
+            }
+            }
         }
     }
 
@@ -278,6 +309,7 @@ struct InfoConversationView: View {
 /// Das Menü (Langdruck) bietet nur, was `darfBearbeiten` und `darfLoeschen` sagen.
 private struct MessageCard: View {
     let message: InfoMessage
+    let isNew: Bool
     let onEdit: () -> Void
     let onDelete: () -> Void
 
@@ -288,6 +320,10 @@ private struct MessageCard: View {
             } else {
                 HStack(alignment: .firstTextBaseline) {
                     Text(verbatim: author).font(.footnote.weight(.semibold)).foregroundStyle(Color.frAccentText)
+                    if isNew {
+                        Label("Neu", systemImage: "circle.fill").font(.caption.weight(.bold)).foregroundStyle(Color.frPrimaryText)
+                            .labelStyle(.titleAndIcon)
+                    }
                     Spacer(minLength: Spacing.s2)
                     Text(verbatim: ExerciseFormat.time(message.createdAt)).font(.footnote).monospacedDigit().foregroundStyle(Color.frOnSurfaceVariant)
                 }

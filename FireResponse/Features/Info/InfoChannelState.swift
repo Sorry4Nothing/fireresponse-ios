@@ -73,10 +73,13 @@ final class InfoConversationModel {
     private(set) var deleteError: ApiError?
     private(set) var sentCount = 0
     private(set) var failedCount = 0
+    /// Mitteilungen anderer, die beim Öffnen noch ungelesen waren oder seither dazukamen; sie tragen «Neu», solange der Verlauf offen ist.
+    private(set) var newIds: Set<String> = []
 
     private let service: any InfoChannelService
     private let onRead: @MainActor () -> Void
     private var lastMarked: String?
+    private var didLoad = false
 
     init(channel: InfoChannel, service: any InfoChannelService, onRead: @escaping @MainActor () -> Void = {}) {
         self.channel = channel
@@ -90,6 +93,7 @@ final class InfoConversationModel {
         switch await service.infoMessages(unitId: channel.id, before: nil, limit: Self.pageSize) {
         case .ok(let page):
             let newest = Array(page.messages.reversed())
+            markNew(in: newest)
             // Ältere, schon geladene Seiten bleiben: alles vor der ältesten Mitteilung der ersten Seite.
             if let oldest = newest.first, let index = messages.firstIndex(where: { $0.id == oldest.id }) {
                 messages = Array(messages[..<index]) + newest
@@ -108,6 +112,18 @@ final class InfoConversationModel {
     func retry() async {
         phase = .loading
         await load()
+    }
+
+    /// Beim ersten Laden die letzten `ungelesen` Mitteilungen anderer, danach jede fremde Mitteilung, die vorher nicht da war.
+    private func markNew(in newest: [InfoMessage]) {
+        let others = newest.filter { !$0.isOwn && !$0.isDeleted }
+        if didLoad {
+            let known = Set(messages.map(\.id))
+            newIds.formUnion(others.filter { !known.contains($0.id) }.map(\.id))
+        } else {
+            newIds = Set(others.suffix(channel.unread).map(\.id))
+            didLoad = true
+        }
     }
 
     func loadOlder() async {
