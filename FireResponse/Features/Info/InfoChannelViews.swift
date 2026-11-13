@@ -132,7 +132,6 @@ nonisolated enum InfoFormat {
 struct InfoConversationView: View {
     @State private var model: InfoConversationModel
     @State private var draft = ""
-    @State private var confirmSend = false
     @State private var deleting: InfoMessage?
     @FocusState private var inputFocused: Bool
     private let siblings: [InfoChannel]
@@ -170,12 +169,6 @@ struct InfoConversationView: View {
             .refreshable { await model.load() }
             .sensoryFeedback(.success, trigger: model.sentCount)
             .sensoryFeedback(.error, trigger: model.failedCount)
-            .confirmationDialog(
-                "Geht an alle in \(model.channel.unit.name)", isPresented: $confirmSend, titleVisibility: .visible
-            ) {
-                Button("Senden") { submit() }
-                Button("Abbrechen", role: .cancel) {}
-            }
             .alert("Mitteilung für alle löschen?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } })) {
                 Button("Abbrechen", role: .cancel) {}
                 Button("Löschen", role: .destructive) {
@@ -287,7 +280,7 @@ struct InfoConversationView: View {
     private var canSubmit: Bool { model.composer != .sending && InfoConversationModel.clean(draft) != nil }
 
     private func tapSend() {
-        if model.editing != nil { submit() } else { confirmSend = true }
+        submit()
     }
 
     private func submit() {
@@ -346,7 +339,8 @@ private struct MessageCard: View {
     }
 
     private var author: String {
-        let name = message.author?.name ?? ""
+        // Gelöschtes Konto: der Server liefert keinen Autor.
+        let name = message.author?.name ?? String(localized: "Ehemaliges Mitglied")
         guard let role = InfoFormat.roleName(message.author?.role) else { return name }
         return name.isEmpty ? role : "\(name) · \(role)"
     }
