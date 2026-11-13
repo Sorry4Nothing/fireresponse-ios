@@ -28,12 +28,21 @@ nonisolated enum LeaderSlotsText {
         return Line(kind: .free, text: text, spoken: text, symbol: "person.2")
     }
 
-    /// Wartende im Kopf der Platzanzeige: «2 Personen warten».
+    static func roleName(_ role: String) -> String? {
+        switch role {
+        case "kommandant": String(localized: "Hauptleitung")
+        case "stellvertretung": String(localized: "Stellvertretende Leitung")
+        case "leitung": String(localized: "Leitung")
+        default: nil
+        }
+    }
+
+    /// Wartende im Kopf der Platzanzeige: «2 auf der Warteliste».
     static func waitingText(_ count: Int) -> String? {
         switch count {
         case ..<1: nil
-        case 1: String(localized: "1 Person wartet")
-        default: String(localized: "\(count) Personen warten")
+        case 1: String(localized: "1 auf der Warteliste")
+        default: String(localized: "\(count) auf der Warteliste")
         }
     }
 }

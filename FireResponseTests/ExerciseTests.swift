@@ -275,7 +275,7 @@ extension ExerciseTests {
         let waiting = try #require(try slotsProgram(free: 0, full: true, own: "warteliste", position: 2).leaderSlots)
         let waitingLine = LeaderSlotsText.line(waiting, own: "warteliste")
         #expect(waitingLine.text == "Warteliste, Platz 2" && waitingLine.kind == .waiting)
-        #expect(LeaderSlotsText.waitingText(0) == nil && LeaderSlotsText.waitingText(1) == "1 Person wartet" && LeaderSlotsText.waitingText(3) == "3 Personen warten")
+        #expect(LeaderSlotsText.waitingText(0) == nil && LeaderSlotsText.waitingText(1) == "1 auf der Warteliste" && LeaderSlotsText.waitingText(3) == "3 auf der Warteliste")
     }
 
     @Test func slotsKeyIsAbsentForEveryoneElse() throws {
