@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Quelle des App-Symbols: roter Grund, weisse Flamme, gelber Kern (Form wie die Flamme der Android-App, ic_logo, Viewport 160). Nicht umfärben. -->
+  <rect width="1024" height="1024" fill="#C8141A"/>
+  <g transform="translate(124.2 131.4) scale(4.86)">
+    <path fill="#FFFFFF" d="M80,10C95,40 130,55 130,95C130,125 108,148 80,148C52,148 30,125 30,95C30,72 45,58 55,42C58,56 66,62 72,62C70,42 74,26 80,10Z"/>
+    <path fill="#FFD21F" d="M80,78C88,92 104,100 104,118C104,133 93,142 80,142C67,142 56,133 56,118C56,100 72,92 80,78Z"/>
+  </g>
+</svg>
