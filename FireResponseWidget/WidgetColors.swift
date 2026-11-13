@@ -7,7 +7,7 @@ extension Color {
     static let frOnSurface = Color("on-surface")
     static let frOnSurfaceVariant = Color("on-surface-variant")
     static let frOutlineVariant = Color("outline-variant")
-    static let frPrimary = Color("primary")
+    static let frPrimary = Color("primary-base")
     static let frOnSecondaryMuted = Color("on-secondary-muted")
     static let frSecondaryContainer = Color("secondary-container")
     static let frOnSecondaryContainer = Color("on-secondary-container")
