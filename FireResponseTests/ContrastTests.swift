@@ -18,7 +18,7 @@ struct ContrastTests {
         let onSurface = ["on-surface", "on-surface-variant", "accent-text", "accent-base", "primary-text", "on-error-container"]
         var pairs = onSurface.flatMap { fg in surfaces.map { (fg, $0) } }
         pairs += [
-            ("on-primary", "primary"), ("on-secondary", "secondary"), ("on-secondary-muted", "secondary"),
+            ("on-primary", "primary-base"), ("on-secondary", "secondary-base"), ("on-secondary-muted", "secondary-base"),
             ("on-accent-fill", "accent-fill"), ("on-secondary-container", "secondary-container"),
             ("on-success-container", "success-container"), ("on-error-container", "error-container"),
             ("on-warning-container", "warning-container"), ("on-rang-container", "rang-container")
