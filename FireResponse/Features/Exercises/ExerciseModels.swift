@@ -119,6 +119,14 @@ final class ExerciseDetailModel {
     /// Zählt fehlgeschlagene Antworten (löst die Fehler-Haptik aus).
     private(set) var failedCount = 0
     private(set) var lastSentTime: String?
+    /// Leitende mit Zusage und Wartende, nur bei Terminen mit Plätzen für Leitende (Issue #66).
+    private(set) var leaders: [LeaderParticipation] = []
+    /// Aktuelle Plätze aus der Teilnahmen-Liste; frischer als die aus dem Termin, sonst gleich.
+    private(set) var leaderSlots: LeaderSlots?
+    /// Die Person hat «ja» gesendet, der letzte Platz war aber schon weg: Sie steht auf der Warteliste (Alert).
+    var placeTaken = false
+    /// Von der Warteliste nachgerückt (zwischen zwei Ladungen von «warteliste» auf «ja»).
+    var movedUp = false
 
     private let service: any ExercisesService
     private let now: @Sendable () -> Date
@@ -135,9 +143,26 @@ final class ExerciseDetailModel {
         switch await service.program(id: id) {
         case .ok(let program):
             localAnswers = [:]
-            phase = .loaded(program)
+            apply(program)
+            await loadLeaders()
         case .failure(let error, _, _):
             phase = .failed(error)
+        }
+    }
+
+    /// Übernimmt das Programm. Wechselt die eigene Anmeldung von «warteliste» auf «ja», ist die Person nachgerückt.
+    private func apply(_ program: Program) {
+        if case .loaded(let before) = phase, before.ownRegistration == "warteliste", program.ownRegistration == "ja" { movedUp = true }
+        phase = .loaded(program)
+    }
+
+    /// Die Leitenden mit Zusage und die Warteliste: nur, wenn der Termin Plätze für Leitende hat (der Schlüssel fehlt für alle anderen).
+    /// Ein Fehler lässt die Liste leer; die Platzanzeige aus dem Termin bleibt.
+    private func loadLeaders() async {
+        guard case .loaded(let program) = phase, program.leaderSlots != nil else { leaders = []; leaderSlots = nil; return }
+        if case .ok(let value) = await service.participations(programId: id) {
+            leaders = value.leaders
+            leaderSlots = value.leaderSlots
         }
     }
 
@@ -152,7 +177,8 @@ final class ExerciseDetailModel {
         guard saving == nil, case .loaded = phase else { return }
         if case .ok(let program) = await service.program(id: id), saving == nil {
             localAnswers = [:]
-            phase = .loaded(program)
+            apply(program)
+            await loadLeaders()
         }
     }
 
@@ -162,20 +188,33 @@ final class ExerciseDetailModel {
         guard saving == nil, case .loaded = phase else { return }
         saving = Saving(target: target, answer: answer)
         error = nil
+        placeTaken = false
+        movedUp = false
+        let slotsBefore: LeaderSlots?
+        if case .loaded(let program) = phase { slotsBefore = leaderSlots ?? program.leaderSlots } else { slotsBefore = nil }
+        var leadership: LeadershipResult?
         let result: ApiResult<Void>
         switch target {
         case .participant(let participantId): result = await service.setParticipation(programId: id, participantId: participantId, answer: answer)
-        case .leadership: result = await service.setLeadership(programId: id, answer: answer)
+        case .leadership:
+            let sent = await service.setLeadership(programId: id, answer: answer)
+            leadership = sent.value
+            result = sent.map { _ in () }
         }
         switch result {
         case .ok:
             lastSentTime = ExerciseFormat.time(now())
             sentAt[target] = lastSentTime
-            localAnswers[target] = answer.rawValue
+            // Der Server entscheidet: bei vollem Termin macht «ja» eine Wartende.
+            let status = leadership?.status ?? answer.rawValue
+            localAnswers[target] = status
+            // Rennen um den letzten Platz: Die Ansicht zeigte noch freie Plätze, die Antwort sagt «warteliste».
+            if answer == .yes, status == "warteliste", slotsBefore?.isFull == false { placeTaken = true }
             sentCount += 1
             if case .ok(let program) = await service.program(id: id) {
                 localAnswers = [:]
                 phase = .loaded(program)
+                await loadLeaders()
             }
         case .failure(let failure, _, _):
             error = failure

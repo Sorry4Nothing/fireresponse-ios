@@ -6,7 +6,7 @@ nonisolated protocol ExercisesService: Sendable {
     func program(id: String) async -> ApiResult<Program>
     func participations(programId: String) async -> ApiResult<Participations>
     func setParticipation(programId: String, participantId: String, answer: Answer) async -> ApiResult<Void>
-    func setLeadership(programId: String, answer: Answer) async -> ApiResult<Void>
+    func setLeadership(programId: String, answer: Answer) async -> ApiResult<LeadershipResult>
     func personImage(path: String) async -> ApiResult<Data>
     func badgeImage(path: String) async -> ApiResult<Data>
     func unitLogo(unitId: String) async -> ApiResult<Data>
@@ -95,7 +95,7 @@ nonisolated enum ExerciseRules {
 
     /// Offene zuerst (die braucht man), dann Ja, dann Nein; sonst in der Reihenfolge des Servers.
     static func sortedByStatus<T>(_ items: [T], status: (T) -> String) -> [T] {
-        func rank(_ value: String) -> Int { value == "ja" ? 1 : value == "nein" ? 2 : 0 }
+        func rank(_ value: String) -> Int { value == "ja" ? 1 : value == "warteliste" ? 2 : value == "nein" ? 3 : 0 }
         return items.enumerated().sorted { (rank(status($0.element)), $0.offset) < (rank(status($1.element)), $1.offset) }.map(\.element)
     }
 
@@ -253,6 +253,7 @@ nonisolated enum ExerciseFormat {
         if program.status == "abgesagt" { parts.append(String(localized: "Abgesagt")) }
         if program.status == "pruefen" { parts.append(String(localized: "Wird noch geprüft")) }
         parts += statusSentences(program).map(\.text)
+        if let slots = program.leaderSlots { parts.append(LeaderSlotsText.line(slots, own: program.ownRegistration).spoken) }
         if case .opensOn(let day) = ExerciseRules.window(program, today: today) { parts.append(opensOnText(day)) }
         return parts.compactMap { $0 }.joined(separator: ", ")
     }

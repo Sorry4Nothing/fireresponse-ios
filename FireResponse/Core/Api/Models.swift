@@ -349,6 +349,52 @@ nonisolated struct ProgramParticipant: Decodable, Sendable, Equatable, Identifia
     }
 }
 
+/// Plätze der Leitenden bei einem Termin mit Höchstzahl (`leitungPlaetze`). Nur Zusagen belegen Plätze; Wartende haben keinen.
+nonisolated struct LeaderSlots: Decodable, Sendable, Equatable {
+    let maxCount: Int
+    let taken: Int
+    let free: Int
+    let isFull: Bool
+    let waiting: Int
+    /// Nummer auf der Warteliste (1 = als Nächste dran); `nil`, wenn die Person nicht wartet.
+    let ownPosition: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case maxCount = "hoechstzahl"
+        case taken = "belegt"
+        case free = "frei"
+        case isFull = "voll"
+        case waiting = "wartende"
+        case ownPosition = "eigenePosition"
+    }
+
+    init(maxCount: Int, taken: Int, free: Int, isFull: Bool, waiting: Int, ownPosition: Int?) {
+        self.maxCount = maxCount
+        self.taken = taken
+        self.free = free
+        self.isFull = isFull
+        self.waiting = waiting
+        self.ownPosition = ownPosition
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        maxCount = try values.decode(Int.self, forKey: .maxCount)
+        taken = try values.decode(Int.self, forKey: .taken)
+        free = try values.decode(Int.self, forKey: .free)
+        isFull = try values.decode(Bool.self, forKey: .isFull)
+        waiting = try values.decodeIfPresent(Int.self, forKey: .waiting) ?? 0
+        ownPosition = try values.decodeIfPresent(Int.self, forKey: .ownPosition)
+    }
+}
+
+/// Antwort auf `PUT …/leitung`: `status` ist `ja`, `nein` oder `warteliste` (bei vollem Termin setzt «ja» auf die Warteliste), `position` die Nummer dort.
+/// Ein Server vor dieser Fassung antwortet 204 ohne Body.
+nonisolated struct LeadershipResult: Decodable, Sendable, Equatable {
+    let status: String
+    let position: Int?
+}
+
 /// Listeneintrag und Detail (`ProgrammListeneintrag`, `ProgrammDetail`); `topic`, `info`, `callUp` und `contact` füllt nur das Detail.
 /// `status`: `aktiv`, `abgesagt` oder `pruefen`. Ganztägig: `dayFrom`/`dayTo` gesetzt, sonst `start`/`end`.
 nonisolated struct Program: Decodable, Sendable, Equatable, Identifiable {
@@ -366,7 +412,10 @@ nonisolated struct Program: Decodable, Sendable, Equatable, Identifiable {
     let unit: ProgramUnit
     let participants: [ProgramParticipant]
     /// Eigene Anmeldung als Leitung: `ja`, `nein` oder `offen`; fehlt, wenn die Person keine Rolle in der Einheit hat.
+    /// `ja`, `nein`, `offen` oder `warteliste` (nur bei Terminen mit Höchstzahl für Leitende, Issue #66).
     let ownRegistration: String?
+    /// Plätze für Leitende: nur bei selbst erstellten Terminen mit Höchstzahl und nur für Kommando und Leitung; sonst fehlt der Schlüssel.
+    let leaderSlots: LeaderSlots?
     let topic: String?
     let info: String?
     let callUp: String?
@@ -386,6 +435,7 @@ nonisolated struct Program: Decodable, Sendable, Equatable, Identifiable {
         case unit = "einheit"
         case participants = "teilnehmende"
         case ownRegistration = "eigeneAnmeldung"
+        case leaderSlots = "leitungPlaetze"
         case topic = "thema"
         case callUp = "aufgebot"
         case contact = "kontakt"
@@ -404,11 +454,29 @@ nonisolated struct ParticipationCount: Decodable, Sendable, Equatable {
     let yes: Int
     let no: Int
     let open: Int
+    /// Nur bei den Leitenden eines Termins mit Höchstzahl.
+    let waitlist: Int
 
     enum CodingKeys: String, CodingKey {
         case yes = "ja"
         case no = "nein"
         case open = "offen"
+        case waitlist = "warteliste"
+    }
+
+    init(yes: Int, no: Int, open: Int, waitlist: Int = 0) {
+        self.yes = yes
+        self.no = no
+        self.open = open
+        self.waitlist = waitlist
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        yes = try values.decode(Int.self, forKey: .yes)
+        no = try values.decode(Int.self, forKey: .no)
+        open = try values.decode(Int.self, forKey: .open)
+        waitlist = try values.decodeIfPresent(Int.self, forKey: .waitlist) ?? 0
     }
 }
 
@@ -434,11 +502,14 @@ nonisolated struct LeaderParticipation: Decodable, Sendable, Equatable, Identifi
     let name: String
     let imagePath: String?
     let role: String
+    /// `ja`, `nein`, `offen` oder `warteliste`.
     let status: String
+    /// Nummer auf der Warteliste, nur bei `warteliste`.
+    let position: Int?
     let badge: Badge?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, status
+        case id, name, status, position
         case imagePath = "bildUrl"
         case role = "rolle"
         case badge = "abzeichen"
@@ -460,8 +531,11 @@ nonisolated struct Participations: Decodable, Sendable, Equatable {
     let counts: Counts
     let participants: [ParticipationEntry]
     let leaders: [LeaderParticipation]
+    /// Nur bei Terminen mit Höchstzahl, für Kommando und Leitung.
+    let leaderSlots: LeaderSlots?
 
     enum CodingKeys: String, CodingKey {
+        case leaderSlots = "leitungPlaetze"
         case counts = "zahlen"
         case participants = "teilnehmende"
         case leaders = "leitende"

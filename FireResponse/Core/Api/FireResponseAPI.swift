@@ -87,8 +87,11 @@ nonisolated struct FireResponseAPI: Sendable {
     }
 
     /// Eigene Anmeldung als Kommando, Stellvertretung oder Leitung.
-    func setLeadership(programId: String, answer: Answer) async -> ApiResult<Void> {
-        await client.sendDiscardingBody(.setLeadership, values: [programId], body: .json(AnswerRequest(status: answer)))
+    /// Die Antwort kann «warteliste» sagen (voller Termin). Ein Server vor dieser Fassung antwortet 204: dann gilt, was gesendet wurde.
+    func setLeadership(programId: String, answer: Answer) async -> ApiResult<LeadershipResult> {
+        await client.perform(.setLeadership, values: [programId], body: .json(AnswerRequest(status: answer))).map { data in
+            (try? JSONDecoder.api.decode(LeadershipResult.self, from: data)) ?? LeadershipResult(status: answer.rawValue, position: nil)
+        }
     }
 
     func unitContact(unitId: String) async -> ApiResult<UnitContact> {

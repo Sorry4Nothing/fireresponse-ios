@@ -189,6 +189,10 @@ private struct ExerciseCard: View {
                 ForEach(Array(ExerciseFormat.statusSentences(program).enumerated()), id: \.offset) { _, line in
                     Label(line.text, systemImage: line.symbol).font(.footnote.weight(.semibold)).foregroundStyle(line.kind.color)
                 }
+                if let slots = program.leaderSlots {
+                    let line = LeaderSlotsText.line(slots, own: program.ownRegistration)
+                    Label(line.text, systemImage: line.symbol).font(.footnote.weight(.semibold)).foregroundStyle(Color.frOnSurfaceVariant)
+                }
                 if case .opensOn(let day) = ExerciseRules.window(program, today: today) {
                     Label(ExerciseFormat.opensOnText(day), systemImage: "clock").font(.footnote.weight(.semibold))
                         .foregroundStyle(Color.frOnSurfaceVariant)

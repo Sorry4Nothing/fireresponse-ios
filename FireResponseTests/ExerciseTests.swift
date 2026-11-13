@@ -9,6 +9,10 @@ final class FakeExercises: ExercisesService, @unchecked Sendable {
         var program: Program
         var participationResult: ApiResult<Void> = .ok(())
         var leadershipResult: ApiResult<Void> = .ok(())
+        /// Was der Server als Antwort auf die Leitungs-Zusage sagt; ohne Angabe gilt, was gesendet wurde (Server vor Nr. 34).
+        var leadershipOutcome: LeadershipResult?
+        /// Antwort der Teilnahmen-Liste (Leitende mit Zusage und Warteliste); ohne Angabe 403 wie für Eltern.
+        var participationsValue: Participations?
         var programCalls = 0
         var setCalls: [String] = []
         var reloadFails = false
@@ -27,7 +31,9 @@ final class FakeExercises: ExercisesService, @unchecked Sendable {
         }
     }
 
-    func participations(programId: String) async -> ApiResult<Participations> { .failure(.forbidden) }
+    func participations(programId: String) async -> ApiResult<Participations> {
+        state.withLock { $0.participationsValue.map { .ok($0) } ?? .failure(.forbidden) }
+    }
 
     func setParticipation(programId: String, participantId: String, answer: Answer) async -> ApiResult<Void> {
         state.withLock {
@@ -36,10 +42,11 @@ final class FakeExercises: ExercisesService, @unchecked Sendable {
         }
     }
 
-    func setLeadership(programId: String, answer: Answer) async -> ApiResult<Void> {
-        state.withLock {
-            $0.setCalls.append("leitung=\(answer.rawValue)")
-            return $0.leadershipResult
+    func setLeadership(programId: String, answer: Answer) async -> ApiResult<LeadershipResult> {
+        state.withLock { current in
+            current.setCalls.append("leitung=\(answer.rawValue)")
+            let outcome = current.leadershipOutcome ?? LeadershipResult(status: answer.rawValue, position: nil)
+            return current.leadershipResult.map { _ in outcome }
         }
     }
 
@@ -247,5 +254,97 @@ extension ExerciseTests {
     @Test func timeDisplayIsNilWithoutReadableTime() throws {
         let program = try decoded(#""ganztaegig":false,"beginn":null,"ende":null"#)
         #expect(ExerciseFormat.timeDisplay(program) == nil)
+    }
+
+    // MARK: Plätze für Leitende und Warteliste (Issue #66)
+
+    private func slotsProgram(free: Int, full: Bool, own: String?, position: Int? = nil) throws -> Program {
+        let ownJSON = own.map { #","eigeneAnmeldung":"\#($0)""# } ?? ""
+        let slots = #","leitungPlaetze":{"hoechstzahl":4,"belegt":\#(4 - free),"frei":\#(free),"voll":\#(full),"wartende":1,"eigenePosition":\#(position.map(String.init) ?? "null")}"#
+        return try decoded(#""ganztaegig":false,"beginn":"2027-03-06T13:00:00.000Z","ende":"2027-03-06T16:00:00.000Z"\#(slots)\#(ownJSON)"#)
+    }
+
+    @Test func slotsTextsAreCalmAndExact() throws {
+        let two = try #require(try slotsProgram(free: 2, full: false, own: "offen").leaderSlots)
+        #expect(LeaderSlotsText.line(two, own: "offen").text == "Noch 2 Plätze frei")
+        let one = try #require(try slotsProgram(free: 1, full: false, own: "offen").leaderSlots)
+        #expect(LeaderSlotsText.line(one, own: "offen").text == "Noch 1 Platz frei")
+        let full = try #require(try slotsProgram(free: 0, full: true, own: "offen").leaderSlots)
+        let fullLine = LeaderSlotsText.line(full, own: "offen")
+        #expect(fullLine.text == "Voll" && fullLine.spoken == "Voll, Warteliste möglich" && fullLine.kind == .full)
+        let waiting = try #require(try slotsProgram(free: 0, full: true, own: "warteliste", position: 2).leaderSlots)
+        let waitingLine = LeaderSlotsText.line(waiting, own: "warteliste")
+        #expect(waitingLine.text == "Warteliste, Platz 2" && waitingLine.kind == .waiting)
+        #expect(LeaderSlotsText.waitingText(0) == nil && LeaderSlotsText.waitingText(1) == "1 Person wartet" && LeaderSlotsText.waitingText(3) == "3 Personen warten")
+    }
+
+    @Test func slotsKeyIsAbsentForEveryoneElse() throws {
+        #expect(try makeProgram().leaderSlots == nil)
+        #expect(try slotsProgram(free: 0, full: true, own: "warteliste", position: 1).ownRegistration == "warteliste")
+    }
+
+    @Test func raceForTheLastPlaceShowsTheAlert() async throws {
+        let fake = FakeExercises(try slotsProgram(free: 1, full: false, own: "offen"))
+        fake.state.withLock { $0.leadershipOutcome = LeadershipResult(status: "warteliste", position: 1) }
+        let model = ExerciseDetailModel(id: "p", service: fake)
+        await model.load()
+        await model.answer(.yes, for: .leadership)
+        #expect(model.placeTaken && model.error == nil)
+    }
+
+    @Test func joiningTheWaitlistOfAFullTermIsNoRaceAndNoError() async throws {
+        let fake = FakeExercises(try slotsProgram(free: 0, full: true, own: "offen"))
+        fake.state.withLock { $0.leadershipOutcome = LeadershipResult(status: "warteliste", position: 2) }
+        let model = ExerciseDetailModel(id: "p", service: fake)
+        await model.load()
+        await model.answer(.yes, for: .leadership)
+        #expect(!model.placeTaken && model.error == nil && model.sentCount == 1)
+    }
+
+    @Test func movingUpFromTheWaitlistIsNoticed() async throws {
+        let fake = FakeExercises(try slotsProgram(free: 0, full: true, own: "warteliste", position: 1))
+        let model = ExerciseDetailModel(id: "p", service: fake)
+        await model.load()
+        #expect(!model.movedUp)
+        let promoted = try slotsProgram(free: 0, full: true, own: "ja")
+        fake.state.withLock { $0.program = promoted }
+        await model.refreshQuietly()
+        #expect(model.movedUp)
+    }
+
+    @Test func leadersAndWaitlistLoadOnlyWithSlots() async throws {
+        let json = #"{"zahlen":{"teilnehmende":{"ja":0,"nein":0,"offen":0},"leitende":{"ja":1,"nein":0,"offen":0,"warteliste":1}},"teilnehmende":[],"# +
+            #""leitungPlaetze":{"hoechstzahl":1,"belegt":1,"frei":0,"voll":true,"wartende":1,"eigenePosition":null},"# +
+            #""leitende":[{"id":"l1","name":"A","rolle":"leitung","status":"ja","bildUrl":null,"abzeichen":null},"# +
+            #"{"id":"l2","name":"B","rolle":"leitung","status":"warteliste","position":1,"bildUrl":null,"abzeichen":null}]}"#
+        let value = try JSONDecoder.api.decode(Participations.self, from: Data(json.utf8))
+        #expect(value.counts.leaders.waitlist == 1 && value.leaders[1].position == 1 && value.leaderSlots?.isFull == true)
+
+        let withSlots = FakeExercises(try slotsProgram(free: 0, full: true, own: "ja"))
+        withSlots.state.withLock { $0.participationsValue = value }
+        let model = ExerciseDetailModel(id: "p", service: withSlots)
+        await model.load()
+        #expect(model.leaders.count == 2 && model.leaderSlots?.waiting == 1)
+
+        let without = FakeExercises(try makeProgram())
+        without.state.withLock { $0.participationsValue = value }
+        let plain = ExerciseDetailModel(id: "p", service: without)
+        await plain.load()
+        #expect(plain.leaders.isEmpty && plain.leaderSlots == nil)
+    }
+
+    @Test func waitlistedLeadersSortBetweenYesAndNo() {
+        let sorted = ExerciseRules.sortedByStatus(["nein", "warteliste", "ja", "offen"], status: { $0 })
+        #expect(sorted == ["offen", "ja", "warteliste", "nein"])
+    }
+
+    @Test func widgetShowsOnlyFullOrWaitlist() throws {
+        let now = try #require(ISO8601DateFormatter().date(from: "2027-03-01T10:00:00+01:00"))
+        let full = WidgetSnapshot.make(from: [try slotsProgram(free: 0, full: true, own: "ja")], now: now).rows.first
+        #expect(full?.count == "Voll")
+        let waiting = WidgetSnapshot.make(from: [try slotsProgram(free: 0, full: true, own: "warteliste", position: 2)], now: now).rows.first
+        #expect(waiting?.count == "Warteliste")
+        let free = WidgetSnapshot.make(from: [try slotsProgram(free: 2, full: false, own: "ja")], now: now).rows.first
+        #expect(free?.count != "Voll" && free?.count != "Warteliste")
     }
 }

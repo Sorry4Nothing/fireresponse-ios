@@ -266,6 +266,13 @@ struct ApiClientTests {
         #expect(StubURLProtocol.recorded.count == before)
     }
 
+    @Test func leadershipAnswerReadsTheWaitlistAndToleratesAnOldServer() async {
+        let (_, api, _) = makeClient { _ in StubReply(200, json: #"{"status":"warteliste","position":2}"#) }
+        #expect(await api.setLeadership(programId: "p", answer: .yes).value == LeadershipResult(status: "warteliste", position: 2))
+        let (_, old, _) = makeClient { _ in StubReply(204) }
+        #expect(await old.setLeadership(programId: "p", answer: .no).value == LeadershipResult(status: "nein", position: nil))
+    }
+
     @Test func tooLargeImageIsRejected() async {
         let (_, api, _) = makeClient { _ in
             var reply = StubReply(200)
