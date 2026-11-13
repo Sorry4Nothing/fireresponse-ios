@@ -8,17 +8,6 @@ struct ApiContractTests {
     private static let root = URL(filePath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
     private static let endpointFile = "Endpoint.swift"
 
-    /// Routen, die der Vertrag für die Apps (Vault, «FR API Vertrag Apps Nr 27-34», 13.11.2026) schon festlegt, die `openapi.yaml` des Backends
-    /// aber noch nicht führt, weil das Backend sie nicht gebaut hat (Wartung Nr. 27, Infokanal Nr. 30). Streichen, sobald `api-vertrag/` sie enthält.
-    private static let pendingInBackendContract: Set<String> = [
-        "GET /api/v1/wartung",
-        "GET /api/v1/infokanaele",
-        "GET /api/v1/infokanaele/{}/mitteilungen",
-        "POST /api/v1/infokanaele/{}/mitteilungen",
-        "PUT /api/v1/infokanaele/{}/mitteilungen/{}",
-        "DELETE /api/v1/infokanaele/{}/mitteilungen/{}",
-        "PUT /api/v1/infokanaele/{}/gelesen",
-    ]
 
     /// `{id}`, `{einheitId}` und `$id` zählen gleich: Es kommt auf den Pfad an, nicht auf den Namen des Platzhalters.
     private func normalize(_ path: String) -> String {
@@ -60,7 +49,7 @@ struct ApiContractTests {
         let contract = try contract()
         let missing = Endpoint.allCases
             .map { "\($0.method.rawValue) \(normalize($0.template))" }
-            .filter { !contract.contains($0) && !Self.pendingInBackendContract.contains($0) }
+            .filter { !contract.contains($0) }
         #expect(missing.isEmpty, "Nicht im Vertrag: \(missing)")
     }
 
@@ -97,8 +86,11 @@ struct ApiContractTests {
             "GET /api/v1/programme/{}", "GET /api/v1/programme/{}/teilnahmen", "PUT /api/v1/programme/{}/teilnahmen/{}",
             "PUT /api/v1/programme/{}/leitung", "GET /api/v1/einheiten/{}/kontakt", "GET /api/v1/raenge/{}/abzeichen",
             "GET /api/v1/personen/{}/bild", "GET /api/v1/einheiten/{}/logo", "PUT /api/v1/push-token",
+            "GET /api/v1/wartung", "GET /api/v1/infokanaele", "GET /api/v1/infokanaele/{}/mitteilungen",
+            "POST /api/v1/infokanaele/{}/mitteilungen", "PUT /api/v1/infokanaele/{}/mitteilungen/{}",
+            "DELETE /api/v1/infokanaele/{}/mitteilungen/{}", "PUT /api/v1/infokanaele/{}/gelesen",
         ]
         let actual = Set(Endpoint.allCases.map { "\($0.method.rawValue) \(normalize($0.template))" })
-        #expect(actual == expected.union(Self.pendingInBackendContract.intersection(actual)))
+        #expect(actual == expected)
     }
 }
