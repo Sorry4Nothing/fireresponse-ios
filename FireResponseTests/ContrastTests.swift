@@ -15,7 +15,7 @@ struct ContrastTests {
 
     /// Textpaare (Vordergrund, Hintergrund), mindestens 4.5:1.
     private static var textPairs: [(String, String)] {
-        let onSurface = ["on-surface", "on-surface-variant", "accent-text", "accent", "primary-text", "on-error-container"]
+        let onSurface = ["on-surface", "on-surface-variant", "accent-text", "accent-base", "primary-text", "on-error-container"]
         var pairs = onSurface.flatMap { fg in surfaces.map { (fg, $0) } }
         pairs += [
             ("on-primary", "primary"), ("on-secondary", "secondary"), ("on-secondary-muted", "secondary"),

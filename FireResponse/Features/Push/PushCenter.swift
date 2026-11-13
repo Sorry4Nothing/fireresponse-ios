@@ -63,6 +63,8 @@ final class PushCenter {
         // Erst nach dem Login: Vorher soll Firebase kein Token holen (Info.plist: FirebaseMessagingAutoInitEnabled = NO).
         Messaging.messaging().isAutoInitEnabled = true
         UIApplication.shared.registerForRemoteNotifications()
-        if let token = try? await Messaging.messaging().token() { await tokenReceived(token) }
+        // Das Token kommt über `messaging(_:didReceiveRegistrationToken:)` im `PushAppDelegate` (jetzt, wo Auto-Init an ist, und bei jeder
+        // Erneuerung). `token()` ist veraltet; sein Ersatz `register(completion:)` liefert eine Installations-ID und gehört zu einem Wechsel,
+        // den das Backend mitmachen müsste.
     }
 }

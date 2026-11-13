@@ -18,7 +18,8 @@ extension Color {
     static let frOnSecondaryMuted = Color("on-secondary-muted")
     static let frSecondaryContainer = Color("secondary-container")
     static let frOnSecondaryContainer = Color("on-secondary-container")
-    static let frAccent = Color("accent")
+    // Das Asset heisst «accent-base», weil «accent» mit dem Symbol des AccentColor-Assets kollidiert (Token `accent` im Design System).
+    static let frAccent = Color("accent-base")
     static let frAccentText = Color("accent-text")
     static let frAccentFill = Color("accent-fill")
     static let frOnAccentFill = Color("on-accent-fill")
