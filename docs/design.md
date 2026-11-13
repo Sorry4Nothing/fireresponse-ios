@@ -85,7 +85,7 @@ Code: `Features/Profile/` (Kopf, Liste, Datenschutz, `SignOut`, `ProfileImageRes
 
 
 - **Profilbild zuschneiden (Issue #22, wie Android #98):** ohne Vorlage, Wunsch des Auftraggebers. Nach der Auswahl öffnet sich `CropImageView`: Quadrat mit Kreis als Hilfslinie, Verschieben per Geste, Zoom 1- bis 4-fach per Regler oder Zwei-Finger-Geste. VoiceOver-Aktionen «Ausschnitt nach links/rechts/oben/unten». «Übernehmen» lädt JPEG mit 512 px, gedreht, ohne EXIF; «Abbrechen» lädt nichts hoch. Rechnung `ProfileImageCrop`, Encoder `ProfileImageResizer`.
-- **Konto aufs Kind übertragen:** Auftrag und Entscheid #24 widersprechen sich (Auftrag verlangt die Seite, #24 streicht sie, Übertragen nur im Admin-Panel). `Features/Info/TransferInfoView` ist ein leerer Platzhalter ohne Verweis, Issue #16 bleibt offen. Nichts gebaut, bis der Auftraggeber entscheidet; die Zeile «Konto aufs Kind übertragen» im Profil gibt es darum nicht.
+- **Konto aufs Kind übertragen:** gibt es in der App nicht (Entscheid des Auftraggebers vom 13.11.2026, Issue #24 auf Android, Issue #16 hier geschlossen): Das Übertragen geschieht nur im Admin-Panel. Der Platzhalter `TransferInfoView` ist entfernt (Issue #51); es gibt keine Zeile im Profil und keinen Hinweis in der Termin-Ansicht.
 
 ## Erster Start (Login, Passwort, Willkommen)
 
