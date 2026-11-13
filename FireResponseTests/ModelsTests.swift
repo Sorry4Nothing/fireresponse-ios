@@ -1,4 +1,5 @@
 import Foundation
+import os
 import Testing
 @testable import FireResponse
 
@@ -102,5 +103,214 @@ struct ModelsTests {
         #expect(try json(ProfileSettings(pushPrograms: false)) == #"{"pushProgramme":false}"#)
         #expect(try json(ProfileSettings(phone: .some("+41 79 000 00 00"))) == #"{"telefon":"+41 79 000 00 00"}"#)
         #expect(try json(ProfileSettings(phone: .some(nil))) == #"{"telefon":null}"#)
+    }
+}
+
+// MARK: Infokanal (Issue #68)
+
+/// Fake des Netzes für den Infokanal; Namen und Texte sind erfunden.
+private final class FakeInfoService: InfoChannelService, @unchecked Sendable {
+    struct State {
+        var pages: [InfoMessagePage] = []
+        var posted: [String] = []
+        var edited: [String] = []
+        var deleted: [String] = []
+        var readCalls = 0
+        var failWrites = false
+        var failLoad = false
+    }
+
+    let state = OSAllocatedUnfairLock(initialState: State())
+    let channels: [InfoChannel]
+
+    init(channels: [InfoChannel] = []) { self.channels = channels }
+
+    func infoChannels() async -> ApiResult<InfoChannelList> { .ok(InfoChannelList(channels: channels)) }
+
+    func infoMessages(unitId: String, before: String?, limit: Int) async -> ApiResult<InfoMessagePage> {
+        state.withLock { current in
+            if current.failLoad { return .failure(.network) }
+            let index = before == nil ? 0 : 1
+            return current.pages.indices.contains(index) ? .ok(current.pages[index]) : .failure(.notFound)
+        }
+    }
+
+    func postInfoMessage(unitId: String, text: String) async -> ApiResult<InfoMessage> {
+        state.withLock { current in
+            if current.failWrites { return .failure(.forbidden) }
+            current.posted.append(text)
+            return .ok(InfoMessage.sample(id: "neu", text: text, own: true))
+        }
+    }
+
+    func editInfoMessage(unitId: String, messageId: String, text: String) async -> ApiResult<InfoMessage> {
+        state.withLock { current in
+            if current.failWrites { return .failure(.forbidden) }
+            current.edited.append(text)
+            return .ok(InfoMessage.sample(id: messageId, text: text, own: true, edited: true))
+        }
+    }
+
+    func deleteInfoMessage(unitId: String, messageId: String) async -> ApiResult<Void> {
+        state.withLock { current in
+            if current.failWrites { return .failure(.forbidden) }
+            current.deleted.append(messageId)
+            return .ok(())
+        }
+    }
+
+    func markInfoRead(unitId: String) async -> ApiResult<Void> {
+        state.withLock { $0.readCalls += 1 }
+        return .ok(())
+    }
+}
+
+private extension InfoMessage {
+    nonisolated static func sample(id: String, text: String?, own: Bool = false, edited: Bool = false, canEdit: Bool = true, canDelete: Bool = true) -> InfoMessage {
+        InfoMessage(
+            id: id, text: text, isDeleted: false, isEdited: edited, createdAt: Date(timeIntervalSince1970: 1_800_000_000),
+            author: InfoAuthor(name: "Petra Beispiel", role: "kommando", imagePath: nil), isOwn: own, canEdit: canEdit, canDelete: canDelete
+        )
+    }
+}
+
+private extension InfoChannel {
+    nonisolated static func sample(canWrite: Bool, unread: Int = 0) -> InfoChannel {
+        InfoChannel(unit: ProgramUnit(id: "0f8fad5b-d9cb-469f-a165-70867728950e", name: "Jugendfeuerwehr Beispielstadt", type: "jf"),
+                    name: "Infokanal Jugendfeuerwehr Beispielstadt", canWrite: canWrite, unread: unread, lastMessageAt: nil)
+    }
+}
+
+@MainActor
+struct InfoChannelTests {
+    @Test func decodesChannelsAndMessages() throws {
+        let list = try JSONDecoder.api.decode(InfoChannelList.self, from: Data("""
+        {"infokanaele":[{"einheit":{"id":"e1","name":"Jugendfeuerwehr Beispielstadt","typ":"jf"},"name":"Infokanal Jugendfeuerwehr Beispielstadt",
+         "darfSchreiben":true,"ungelesen":3,"letzteMitteilungAm":"2026-11-13T12:00:00.000Z"}]}
+        """.utf8))
+        #expect(list.channels.first?.unread == 3 && list.channels.first?.canWrite == true && list.channels.first?.id == "e1")
+        let page = try JSONDecoder.api.decode(InfoMessagePage.self, from: Data("""
+        {"darfSchreiben":false,"naechste":"m0","mitteilungen":[
+         {"id":"m2","text":"Hallo","geloescht":false,"bearbeitet":true,"erstelltAm":"2026-11-13T12:00:00.000Z",
+          "autor":{"name":"Petra Beispiel","rolle":"kommando","bildUrl":null},"eigene":false,"darfBearbeiten":false,"darfLoeschen":false},
+         {"id":"m1","text":null,"geloescht":true,"bearbeitet":false,"erstelltAm":"2026-11-13T11:00:00.000Z","autor":null,
+          "eigene":false,"darfBearbeiten":false,"darfLoeschen":false}]}
+        """.utf8))
+        #expect(page.next == "m0" && !page.canWrite && page.messages[0].isEdited && page.messages[1].isDeleted && page.messages[1].author == nil)
+    }
+
+    @Test func unreadBadgeIsTheSumOverAllUnits() async {
+        let service = FakeInfoService(channels: [.sample(canWrite: true, unread: 2), InfoChannel(
+            unit: ProgramUnit(id: "e2", name: "Kinderfeuerwehr Beispielstadt", type: "kf"), name: "Infokanal Kinderfeuerwehr Beispielstadt",
+            canWrite: false, unread: 1, lastMessageAt: nil)])
+        let model = InfoChannelsModel(service: service)
+        await model.load()
+        #expect(model.unreadTotal == 3)
+        model.markedRead(unitId: "e2")
+        #expect(model.unreadTotal == 2)
+    }
+
+    @Test func historyShowsNewestLastAndMarksItRead() async {
+        let service = FakeInfoService()
+        service.state.withLock {
+            $0.pages = [InfoMessagePage(canWrite: false, messages: [.sample(id: "m2", text: "neu"), .sample(id: "m1", text: "alt")], next: "m1")]
+        }
+        var read = 0
+        let model = InfoConversationModel(channel: .sample(canWrite: false), service: service, onRead: { read += 1 })
+        await model.load()
+        #expect(model.messages.map(\.id) == ["m1", "m2"] && !model.canWrite && model.next == "m1")
+        #expect(service.state.withLock { $0.readCalls } == 1 && read == 1)
+        await model.markRead() // dieselbe neueste Mitteilung: nicht noch einmal
+        #expect(service.state.withLock { $0.readCalls } == 1)
+    }
+
+    @Test func olderPagesComeFirst() async {
+        let service = FakeInfoService()
+        service.state.withLock {
+            $0.pages = [InfoMessagePage(canWrite: true, messages: [.sample(id: "m2", text: "b")], next: "m2"),
+                        InfoMessagePage(canWrite: true, messages: [.sample(id: "m1", text: "a")], next: nil)]
+        }
+        let model = InfoConversationModel(channel: .sample(canWrite: true), service: service)
+        await model.load()
+        await model.loadOlder()
+        #expect(model.messages.map(\.id) == ["m1", "m2"] && model.next == nil)
+    }
+
+    @Test func sendingNeedsWritePermissionAndATextOfValidLength() async {
+        let reader = InfoConversationModel(channel: .sample(canWrite: false), service: FakeInfoService())
+        #expect(await reader.send("Hallo") == false)
+
+        let service = FakeInfoService()
+        service.state.withLock { $0.pages = [InfoMessagePage(canWrite: true, messages: [], next: nil)] }
+        let writer = InfoConversationModel(channel: .sample(canWrite: true), service: service)
+        await writer.load()
+        #expect(await writer.send("   ") == false)
+        #expect(await writer.send(String(repeating: "a", count: InfoConversationModel.maxLength + 1)) == false)
+        #expect(await writer.send("  Treffpunkt ist um 13:00.  ") == true)
+        #expect(service.state.withLock { $0.posted } == ["Treffpunkt ist um 13:00."] && writer.messages.last?.id == "neu" && writer.sentCount == 1)
+    }
+
+    @Test func failedSendKeepsTheErrorAndCountsIt() async {
+        let service = FakeInfoService()
+        service.state.withLock { $0.pages = [InfoMessagePage(canWrite: true, messages: [], next: nil)]; $0.failWrites = true }
+        let model = InfoConversationModel(channel: .sample(canWrite: true), service: service)
+        await model.load()
+        #expect(await model.send("Hallo") == false)
+        #expect(model.composer == .failed(.forbidden) && model.failedCount == 1 && model.messages.isEmpty)
+    }
+
+    @Test func editingReplacesTheMessageAndDeletingLeavesAPlaceholder() async {
+        let service = FakeInfoService()
+        service.state.withLock {
+            $0.pages = [InfoMessagePage(canWrite: true, messages: [.sample(id: "m1", text: "alt", own: true)], next: nil)]
+        }
+        let model = InfoConversationModel(channel: .sample(canWrite: true), service: service)
+        await model.load()
+        model.startEditing(model.messages[0])
+        #expect(model.editing?.id == "m1")
+        #expect(await model.saveEdit("neu") == true)
+        #expect(model.messages[0].text == "neu" && model.messages[0].isEdited && model.editing == nil)
+
+        await model.delete(model.messages[0])
+        #expect(model.messages[0].isDeleted && model.messages[0].text == nil && model.messages[0].author == nil)
+        #expect(service.state.withLock { $0.deleted } == ["m1"])
+    }
+
+    @Test func menuRightsFollowTheServerFlags() async {
+        let service = FakeInfoService()
+        service.state.withLock {
+            $0.pages = [InfoMessagePage(canWrite: true, messages: [.sample(id: "m1", text: "fremd", canEdit: false, canDelete: false)], next: nil)]
+        }
+        let model = InfoConversationModel(channel: .sample(canWrite: true), service: service)
+        await model.load()
+        model.startEditing(model.messages[0])
+        await model.delete(model.messages[0])
+        #expect(model.editing == nil && service.state.withLock { $0.deleted }.isEmpty)
+    }
+
+    @Test func onlyHttpLinksBecomeTappable() {
+        let text = "Infos: https://example.org/lager, Mail: mailto:test@example.org, ftp://example.org/datei"
+        let links = InfoText.attributed(text).runs.compactMap(\.link)
+        #expect(links == [URL(string: "https://example.org/lager")])
+    }
+
+    @Test func pushTargetsForTheInfoChannel() {
+        let unit = "0f8fad5b-d9cb-469f-a165-70867728950e"
+        #expect(PushTarget.from(type: "infokanal", id: unit) == .infoChannel(unitId: unit))
+        #expect(PushTarget.from(type: "infokanal", id: "../ich") == nil)
+        // Nr. 29: Push aus dem Backend (`mitteilung`, ohne `id`) öffnet nur die App.
+        #expect(PushTarget.from(type: "mitteilung", id: nil) == nil)
+        #expect(PushTarget.from(type: "mitteilung", id: unit) == nil)
+        #expect(PushTarget.from(userInfo: ["typ": "etwas-neues"]) == nil)
+    }
+
+    @Test func routerKeepsInfoChannelAndAppointmentApart() {
+        let router = PushRouter()
+        let unit = "0f8fad5b-d9cb-469f-a165-70867728950e"
+        router.open(.infoChannel(unitId: unit))
+        #expect(router.pending == nil && router.consume() == nil)
+        #expect(router.consumeInfoChannel() == unit && router.consumeInfoChannel() == nil)
+        router.open(.appointment(id: unit))
+        #expect(router.pending == .appointment(id: unit) && router.consumeInfoChannel() == nil)
     }
 }

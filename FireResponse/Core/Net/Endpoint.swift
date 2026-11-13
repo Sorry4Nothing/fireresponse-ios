@@ -17,11 +17,16 @@ nonisolated enum Endpoint: CaseIterable, Sendable {
     case programs, program, participations, setParticipation, setLeadership
     case unitContact, badgeImage, personImage, unitLogo, maintenance
     case pushToken
+    case infoChannels, infoMessages, postInfoMessage, editInfoMessage, deleteInfoMessage, markInfoRead
 
     var method: HTTPMethod {
         switch self {
         case .signIn, .signOut, .changePassword: .post
         case .updateMe: .patch
+        case .infoChannels, .infoMessages: .get
+        case .postInfoMessage: .post
+        case .editInfoMessage, .markInfoRead: .put
+        case .deleteInfoMessage: .delete
         case .putMyImage, .giveConsent, .setParticipation, .setLeadership, .pushToken: .put
         case .deleteMyImage: .delete
         case .session, .me, .consent, .privacy, .programs, .program, .participations, .unitContact, .badgeImage, .personImage, .unitLogo, .maintenance: .get
@@ -50,6 +55,10 @@ nonisolated enum Endpoint: CaseIterable, Sendable {
         case .maintenance: "/api/v1/wartung"
         case .personImage: "/api/v1/personen/{id}/bild"
         case .pushToken: "/api/v1/push-token"
+        case .infoChannels: "/api/v1/infokanaele"
+        case .infoMessages, .postInfoMessage: "/api/v1/infokanaele/{einheitId}/mitteilungen"
+        case .editInfoMessage, .deleteInfoMessage: "/api/v1/infokanaele/{einheitId}/mitteilungen/{id}"
+        case .markInfoRead: "/api/v1/infokanaele/{einheitId}/gelesen"
         }
     }
 

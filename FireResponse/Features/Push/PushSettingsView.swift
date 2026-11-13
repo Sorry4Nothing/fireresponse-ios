@@ -11,6 +11,7 @@ struct PushSettingsView: View {
         PushSettingsForm(
             programs: model.profile?.pushPrograms ?? true,
             registrations: model.profile?.pushRegistrations,
+            infoChannel: model.profile?.pushInfoChannel ?? true,
             authorization: PushCenter.shared.authorization,
             requestAuthorization: { await PushCenter.shared.requestAuthorization() },
             refreshAuthorization: { await PushCenter.shared.refreshAuthorization() },
@@ -37,12 +38,13 @@ struct PushSettingsForm: View {
     init(
         programs: Bool,
         registrations: Bool?,
+        infoChannel: Bool = true,
         authorization: UNAuthorizationStatus,
         requestAuthorization: @escaping () async -> Void,
         refreshAuthorization: @escaping () async -> Void,
         save: @escaping (ProfileSettings) async -> ApiResult<Void>
     ) {
-        _settings = State(initialValue: PushSettingsModel(programs: programs, registrations: registrations, save: save))
+        _settings = State(initialValue: PushSettingsModel(programs: programs, registrations: registrations, infoChannel: infoChannel, save: save))
         self.authorization = authorization
         self.requestAuthorization = requestAuthorization
         self.refreshAuthorization = refreshAuthorization
@@ -58,6 +60,15 @@ struct PushSettingsForm: View {
                 .tint(.frSwitchOn)
             } footer: {
                 Text("Neue Übungen, Erinnerungen, Absagen und Änderungen.")
+            }
+            .listRowBackground(Color.frSurfaceContainerLow)
+            Section {
+                Toggle(isOn: binding(\.infoChannel) { await settings.setInfoChannel($0) }) {
+                    ListRow("Neue Mitteilungen im Infokanal", systemImage: "megaphone")
+                }
+                .tint(.frSwitchOn)
+            } footer: {
+                Text("Wenn Kommando oder Leitung deiner Einheit eine Mitteilung schreibt. Der Text steht nie in der Mitteilung.")
             }
             .listRowBackground(Color.frSurfaceContainerLow)
             if settings.registrations != nil {

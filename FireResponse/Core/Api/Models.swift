@@ -224,6 +224,8 @@ nonisolated struct Profile: Decodable, Sendable, Equatable, Identifiable {
     let imagePath: String?
     let pushPrograms: Bool
     let pushRegistrations: Bool?
+    /// Schalter für Mitteilungen im Infokanal; fehlt bei einem Server vor Nr. 30 (dann gilt `true`).
+    let pushInfoChannel: Bool?
     let units: [ProfileUnit]
     let participants: [ProfileParticipant]
 
@@ -237,6 +239,7 @@ nonisolated struct Profile: Decodable, Sendable, Equatable, Identifiable {
         case imagePath = "bildUrl"
         case pushPrograms = "pushProgramme"
         case pushRegistrations = "pushAnmeldungen"
+        case pushInfoChannel = "pushInfokanal"
         case units = "einheiten"
         case participants = "teilnehmende"
     }
@@ -246,11 +249,13 @@ nonisolated struct Profile: Decodable, Sendable, Equatable, Identifiable {
 nonisolated struct ProfileSettings: Encodable, Sendable {
     var pushPrograms: Bool?
     var pushRegistrations: Bool?
+    var pushInfoChannel: Bool?
     var phone: String??
 
     enum CodingKeys: String, CodingKey {
         case pushPrograms = "pushProgramme"
         case pushRegistrations = "pushAnmeldungen"
+        case pushInfoChannel = "pushInfokanal"
         case phone = "telefon"
     }
 
@@ -258,6 +263,7 @@ nonisolated struct ProfileSettings: Encodable, Sendable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(pushPrograms, forKey: .pushPrograms)
         try container.encodeIfPresent(pushRegistrations, forKey: .pushRegistrations)
+        try container.encodeIfPresent(pushInfoChannel, forKey: .pushInfoChannel)
         if let phone { try container.encode(phone, forKey: .phone) }
     }
 }
